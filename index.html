@@ -4,9 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard Financeiro Glass</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js">
-    </script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
     <style>
+        /* ========== ESTILOS (mantidos do original, sem alterações) ========== */
         :root {
             --accent: #6366f1;
             --accent2: #8b5cf6;
@@ -84,657 +84,269 @@
             --overlay-bg: rgba(0, 0, 0, 0.6);
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
+        * { margin:0; padding:0; box-sizing:border-box; }
         body {
-            font-family: 'Segoe UI', 'Inter', system-ui, -apple-system, sans-serif;
-            background: linear-gradient(135deg, var(--bg-start), var(--bg-end));
-            background-attachment: fixed;
-            color: var(--text);
-            min-height: 100vh;
-            display: flex;
-            transition: background 0.5s, color 0.5s;
-            overflow-x: hidden;
+            font-family:'Segoe UI', 'Inter', system-ui, -apple-system, sans-serif;
+            background:linear-gradient(135deg, var(--bg-start), var(--bg-end));
+            background-attachment:fixed;
+            color:var(--text);
+            min-height:100vh;
+            display:flex;
+            transition:background 0.5s, color 0.5s;
+            overflow-x:hidden;
         }
 
-        /* SIDEBAR */
+        /* Sidebar */
         .sidebar {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: var(--sidebar-width);
-            height: 100vh;
-            background: var(--sidebar-bg);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border-right: 1px solid var(--sidebar-border);
-            z-index: 1000;
-            display: flex;
-            flex-direction: column;
-            transition: width var(--transition), transform var(--transition);
-            overflow: hidden;
-            flex-shrink: 0;
+            position:fixed; top:0; left:0; width:var(--sidebar-width); height:100vh;
+            background:var(--sidebar-bg); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px);
+            border-right:1px solid var(--sidebar-border); z-index:1000; display:flex; flex-direction:column;
+            transition:width var(--transition), transform var(--transition); overflow:hidden; flex-shrink:0;
         }
-        .sidebar.collapsed {
-            width: var(--sidebar-width-mini);
-        }
-        .sidebar-header {
-            padding: 16px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            border-bottom: 1px solid var(--sidebar-border);
-            min-height: var(--header-height);
-        }
-        .sidebar-logo {
-            width: 40px;
-            height: 40px;
-            border-radius: 12px;
-            background: linear-gradient(135deg, var(--accent), var(--accent2));
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 20px;
-            flex-shrink: 0;
-            color: #fff;
-            font-weight: 700;
-        }
-        .sidebar-title {
-            font-size: 1.05rem;
-            font-weight: 700;
-            letter-spacing: -0.5px;
-            white-space: nowrap;
-            overflow: hidden;
-            transition: opacity 0.2s;
-        }
-        .sidebar.collapsed .sidebar-title {
-            opacity: 0;
-            width: 0;
-        }
-        .sidebar-nav {
-            flex: 1;
-            overflow-y: auto;
-            padding: 12px 8px;
-            display: flex;
-            flex-direction: column;
-            gap: 2px;
-        }
-        .sidebar-nav::-webkit-scrollbar {
-            width: 4px;
-        }
-        .sidebar-nav::-webkit-scrollbar-thumb {
-            background: var(--accent);
-            border-radius: 4px;
-        }
+        .sidebar.collapsed { width:var(--sidebar-width-mini); }
+        .sidebar-header { padding:16px; display:flex; align-items:center; gap:12px; border-bottom:1px solid var(--sidebar-border); min-height:var(--header-height); }
+        .sidebar-logo { width:40px; height:40px; border-radius:12px; background:linear-gradient(135deg, var(--accent), var(--accent2)); display:flex; align-items:center; justify-content:center; font-size:20px; flex-shrink:0; color:#fff; font-weight:700; }
+        .sidebar-title { font-size:1.05rem; font-weight:700; letter-spacing:-0.5px; white-space:nowrap; overflow:hidden; transition:opacity 0.2s; }
+        .sidebar.collapsed .sidebar-title { opacity:0; width:0; }
+        .sidebar-nav { flex:1; overflow-y:auto; padding:12px 8px; display:flex; flex-direction:column; gap:2px; }
+        .sidebar-nav::-webkit-scrollbar { width:4px; }
+        .sidebar-nav::-webkit-scrollbar-thumb { background:var(--accent); border-radius:4px; }
         .nav-item {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 11px 14px;
-            border-radius: var(--radius-sm);
-            cursor: pointer;
-            transition: background 0.2s, color 0.2s;
-            color: var(--text-secondary);
-            text-decoration: none;
-            font-size: 0.9rem;
-            font-weight: 500;
-            white-space: nowrap;
-            user-select: none;
-            border: none;
-            background: none;
-            width: 100%;
-            text-align: left;
-            position: relative;
+            display:flex; align-items:center; gap:12px; padding:11px 14px; border-radius:var(--radius-sm);
+            cursor:pointer; transition:background 0.2s, color 0.2s; color:var(--text-secondary);
+            text-decoration:none; font-size:0.9rem; font-weight:500; white-space:nowrap; user-select:none;
+            border:none; background:none; width:100%; text-align:left; position:relative;
         }
-        .nav-item:hover {
-            background: rgba(99, 102, 241, 0.1);
-            color: var(--accent);
-        }
-        .nav-item.active {
-            background: linear-gradient(135deg, var(--accent), var(--accent2));
-            color: #fff;
-            box-shadow: 0 4px 16px rgba(99, 102, 241, 0.35);
-        }
-        .nav-item .icon {
-            font-size: 1.2rem;
-            flex-shrink: 0;
-            width: 24px;
-            text-align: center;
-        }
-        .nav-item .label {
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-        .sidebar.collapsed .nav-item .label {
-            opacity: 0;
-            width: 0;
-            display: none;
-        }
-        .sidebar.collapsed .nav-item {
-            justify-content: center;
-            padding: 12px;
-        }
-        .sidebar.collapsed .nav-item .icon {
-            margin: 0;
-        }
-        .sidebar-footer {
-            padding: 12px 16px;
-            border-top: 1px solid var(--sidebar-border);
-            font-size: 0.75rem;
-            color: var(--text-muted);
-            text-align: center;
-            white-space: nowrap;
-            overflow: hidden;
-        }
-        .sidebar.collapsed .sidebar-footer {
-            font-size: 0;
-        }
+        .nav-item:hover { background:rgba(99,102,241,0.1); color:var(--accent); }
+        .nav-item.active { background:linear-gradient(135deg, var(--accent), var(--accent2)); color:#fff; box-shadow:0 4px 16px rgba(99,102,241,0.35); }
+        .nav-item .icon { font-size:1.2rem; flex-shrink:0; width:24px; text-align:center; }
+        .nav-item .label { overflow:hidden; text-overflow:ellipsis; }
+        .sidebar.collapsed .nav-item .label { opacity:0; width:0; display:none; }
+        .sidebar.collapsed .nav-item { justify-content:center; padding:12px; }
+        .sidebar.collapsed .nav-item .icon { margin:0; }
+        .sidebar-footer { padding:12px 16px; border-top:1px solid var(--sidebar-border); font-size:0.75rem; color:var(--text-muted); text-align:center; white-space:nowrap; overflow:hidden; }
+        .sidebar.collapsed .sidebar-footer { font-size:0; }
 
-        /* MAIN */
-        .main-wrapper {
-            margin-left: var(--sidebar-width);
-            flex: 1;
-            min-height: 100vh;
-            transition: margin-left var(--transition);
-            display: flex;
-            flex-direction: column;
-        }
-        .main-wrapper.sidebar-collapsed {
-            margin-left: var(--sidebar-width-mini);
-        }
+        /* Main wrapper */
+        .main-wrapper { margin-left:var(--sidebar-width); flex:1; min-height:100vh; transition:margin-left var(--transition); display:flex; flex-direction:column; }
+        .main-wrapper.sidebar-collapsed { margin-left:var(--sidebar-width-mini); }
 
-        /* HEADER */
+        /* Header */
         .header {
-            position: sticky;
-            top: 0;
-            z-index: 900;
-            min-height: var(--header-height);
-            background: var(--card-bg);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border-bottom: 1px solid var(--card-border);
-            display: flex;
-            align-items: center;
-            padding: 0 20px;
-            gap: 12px;
-            flex-wrap: wrap;
-            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
-            transition: background 0.3s;
+            position:sticky; top:0; z-index:900; min-height:var(--header-height);
+            background:var(--card-bg); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px);
+            border-bottom:1px solid var(--card-border); display:flex; align-items:center; padding:0 20px; gap:12px;
+            flex-wrap:wrap; box-shadow:0 2px 12px rgba(0,0,0,0.06); transition:background 0.3s;
         }
-        .hamburger {
-            display: none;
-            background: none;
-            border: none;
-            font-size: 1.5rem;
-            cursor: pointer;
-            color: var(--text);
-            padding: 4px;
-            border-radius: 8px;
-            transition: background 0.2s;
-        }
-        .hamburger:hover {
-            background: rgba(99, 102, 241, 0.1);
-        }
-        .header-title {
-            font-size: 1.15rem;
-            font-weight: 700;
-            letter-spacing: -0.3px;
-            flex: 1;
-            min-width: 120px;
-        }
-        .clock {
-            font-size: 0.9rem;
-            font-weight: 600;
-            color: var(--accent);
-            font-variant-numeric: tabular-nums;
-            letter-spacing: 0.5px;
-            white-space: nowrap;
-        }
-        .header-actions {
-            display: flex;
-            gap: 6px;
-            flex-wrap: wrap;
-            align-items: center;
-        }
+        .hamburger { display:none; background:none; border:none; font-size:1.5rem; cursor:pointer; color:var(--text); padding:4px; border-radius:8px; transition:background 0.2s; }
+        .hamburger:hover { background:rgba(99,102,241,0.1); }
+        .header-title { font-size:1.15rem; font-weight:700; letter-spacing:-0.3px; flex:1; min-width:120px; }
+        .clock { font-size:0.9rem; font-weight:600; color:var(--accent); font-variant-numeric:tabular-nums; letter-spacing:0.5px; white-space:nowrap; }
+        .header-actions { display:flex; gap:6px; flex-wrap:wrap; align-items:center; }
         .btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            padding: 9px 16px;
-            border-radius: var(--radius-sm);
-            border: 1px solid var(--input-border);
-            background: var(--input-bg);
-            color: var(--text);
-            font-size: 0.85rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
-            white-space: nowrap;
-            text-decoration: none;
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
+            display:inline-flex; align-items:center; gap:6px; padding:9px 16px; border-radius:var(--radius-sm);
+            border:1px solid var(--input-border); background:var(--input-bg); color:var(--text);
+            font-size:0.85rem; font-weight:600; cursor:pointer; transition:all 0.2s; white-space:nowrap;
+            text-decoration:none; backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px);
         }
-        .btn:hover {
-            background: var(--accent);
-            color: #fff;
-            border-color: var(--accent);
-            box-shadow: 0 4px 16px rgba(99, 102, 241, 0.3);
-            transform: translateY(-1px);
-        }
-        .btn:active {
-            transform: translateY(0);
-        }
-        .btn-accent {
-            background: linear-gradient(135deg, var(--accent), var(--accent2));
-            color: #fff;
-            border: none;
-            box-shadow: 0 4px 16px rgba(99, 102, 241, 0.3);
-        }
+        .btn:hover { background:var(--accent); color:#fff; border-color:var(--accent); box-shadow:0 4px 16px rgba(99,102,241,0.3); transform:translateY(-1px); }
+        .btn:active { transform:translateY(0); }
+        .btn-accent { background:linear-gradient(135deg, var(--accent), var(--accent2)); color:#fff; border:none; box-shadow:0 4px 16px rgba(99,102,241,0.3); }
 
-        /* CONTENT */
-        .content {
-            flex: 1;
-            padding: 20px;
-            max-width: 1600px;
-            width: 100%;
-            margin: 0 auto;
-        }
-        .page-section {
-            display: none;
-            animation: fadeIn 0.35s ease;
-        }
-        .page-section.active {
-            display: block;
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(12px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+        /* Content */
+        .content { flex:1; padding:20px; max-width:1600px; width:100%; margin:0 auto; }
+        .page-section { display:none; animation:fadeIn 0.35s ease; }
+        .page-section.active { display:block; }
+        @keyframes fadeIn { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:translateY(0); } }
 
-        /* CARDS */
-        .cards-row {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 16px;
-            margin-bottom: 20px;
-        }
+        /* Cards */
+        .cards-row { display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); gap:16px; margin-bottom:20px; }
         .card {
-            background: var(--card-bg);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid var(--card-border);
-            border-radius: var(--radius);
-            box-shadow: var(--shadow);
-            padding: 20px;
-            transition: box-shadow 0.3s, transform 0.3s;
-            position: relative;
-            overflow: hidden;
+            background:var(--card-bg); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px);
+            border:1px solid var(--card-border); border-radius:var(--radius); box-shadow:var(--shadow);
+            padding:20px; transition:box-shadow 0.3s, transform 0.3s; position:relative; overflow:hidden;
         }
-        .card:hover { box-shadow: var(--shadow-hover); transform: translateY(-3px); }
-        .card-icon {
-            width: 44px;
-            height: 44px;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.3rem;
-            margin-bottom: 12px;
-            flex-shrink: 0;
-        }
-        .card-icon.green { background: var(--badge-green-bg); color: var(--badge-green-text); }
-        .card-icon.red { background: var(--badge-red-bg); color: var(--badge-red-text); }
-        .card-icon.purple { background: var(--badge-purple-bg); color: var(--badge-purple-text); }
-        .card-icon.yellow { background: var(--badge-yellow-bg); color: var(--badge-yellow-text); }
-        .card-label {
-            font-size: 0.8rem;
-            font-weight: 600;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 4px;
-        }
-        .card-value {
-            font-size: 1.7rem;
-            font-weight: 800;
-            letter-spacing: -1px;
-            line-height: 1.2;
-        }
-        .card-value.green { color: var(--green); }
-        .card-value.red { color: var(--red); }
-        .card-value.purple { color: var(--accent); }
-        .card-value.yellow { color: var(--yellow); }
-        .card-sub { font-size: 0.8rem; color: var(--text-muted); margin-top: 4px; }
+        .card:hover { box-shadow:var(--shadow-hover); transform:translateY(-3px); }
+        .card-icon { width:44px; height:44px; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:1.3rem; margin-bottom:12px; flex-shrink:0; }
+        .card-icon.green { background:var(--badge-green-bg); color:var(--badge-green-text); }
+        .card-icon.red { background:var(--badge-red-bg); color:var(--badge-red-text); }
+        .card-icon.purple { background:var(--badge-purple-bg); color:var(--badge-purple-text); }
+        .card-icon.yellow { background:var(--badge-yellow-bg); color:var(--badge-yellow-text); }
+        .card-label { font-size:0.8rem; font-weight:600; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.5px; margin-bottom:4px; }
+        .card-value { font-size:1.7rem; font-weight:800; letter-spacing:-1px; line-height:1.2; }
+        .card-value.green { color:var(--green); }
+        .card-value.red { color:var(--red); }
+        .card-value.purple { color:var(--accent); }
+        .card-value.yellow { color:var(--yellow); }
+        .card-sub { font-size:0.8rem; color:var(--text-muted); margin-top:4px; }
 
-        /* FILTERS */
+        /* Filters */
         .filters-bar {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin-bottom: 16px;
-            background: var(--card-bg);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid var(--card-border);
-            border-radius: var(--radius-sm);
-            padding: 14px 16px;
-            box-shadow: var(--shadow);
-            align-items: flex-end;
+            display:flex; flex-wrap:wrap; gap:10px; margin-bottom:16px; background:var(--card-bg);
+            backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px); border:1px solid var(--card-border);
+            border-radius:var(--radius-sm); padding:14px 16px; box-shadow:var(--shadow); align-items:flex-end;
         }
-        .filter-group {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-            min-width: 120px;
-            flex: 1 1 140px;
+        .filter-group { display:flex; flex-direction:column; gap:4px; min-width:120px; flex:1 1 140px; }
+        .filter-group label { font-size:0.72rem; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.4px; }
+        .filter-group select, .filter-group input {
+            padding:9px 12px; border-radius:var(--radius-xs); border:1px solid var(--input-border);
+            background:var(--input-bg); color:var(--text); font-size:0.85rem; font-weight:500; outline:none;
+            transition:border-color 0.2s, box-shadow 0.2s; backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px);
+            width:100%; cursor:pointer;
         }
-        .filter-group label {
-            font-size: 0.72rem;
-            font-weight: 700;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 0.4px;
-        }
-        .filter-group select,
-        .filter-group input {
-            padding: 9px 12px;
-            border-radius: var(--radius-xs);
-            border: 1px solid var(--input-border);
-            background: var(--input-bg);
-            color: var(--text);
-            font-size: 0.85rem;
-            font-weight: 500;
-            outline: none;
-            transition: border-color 0.2s, box-shadow 0.2s;
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
-            width: 100%;
-            cursor: pointer;
-        }
-        .filter-group select:focus,
-        .filter-group input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(99,102,241,0.15); }
-        .filter-group select option { background: var(--card-bg); color: var(--text); }
+        .filter-group select:focus, .filter-group input:focus { border-color:var(--accent); box-shadow:0 0 0 3px rgba(99,102,241,0.15); }
+        .filter-group select option { background:var(--card-bg); color:var(--text); }
 
-        /* TABLES */
+        /* Tables */
         .table-container {
-            background: var(--card-bg);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid var(--card-border);
-            border-radius: var(--radius);
-            box-shadow: var(--shadow);
-            overflow: hidden;
-            margin-bottom: 20px;
+            background:var(--card-bg); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px);
+            border:1px solid var(--card-border); border-radius:var(--radius); box-shadow:var(--shadow);
+            overflow:hidden; margin-bottom:20px;
         }
-        .table-scroll {
-            overflow-x: auto;
-            max-height: 420px;
-            overflow-y: auto;
-        }
-        .table-scroll::-webkit-scrollbar { width: 6px; height: 6px; }
-        .table-scroll::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 4px; }
-        table { width: 100%; border-collapse: collapse; font-size: 0.85rem; min-width: 600px; }
+        .table-scroll { overflow-x:auto; max-height:420px; overflow-y:auto; }
+        .table-scroll::-webkit-scrollbar { width:6px; height:6px; }
+        .table-scroll::-webkit-scrollbar-thumb { background:var(--accent); border-radius:4px; }
+        table { width:100%; border-collapse:collapse; font-size:0.85rem; min-width:600px; }
         table th {
-            padding: 12px 14px;
-            text-align: left;
-            font-weight: 700;
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            letter-spacing: 0.4px;
-            color: var(--text-muted);
-            background: var(--table-header-bg);
-            cursor: pointer;
-            user-select: none;
-            white-space: nowrap;
-            position: sticky;
-            top: 0;
-            z-index: 5;
-            border-bottom: 1px solid var(--card-border);
+            padding:12px 14px; text-align:left; font-weight:700; font-size:0.75rem; text-transform:uppercase;
+            letter-spacing:0.4px; color:var(--text-muted); background:var(--table-header-bg); cursor:pointer;
+            user-select:none; white-space:nowrap; position:sticky; top:0; z-index:5; border-bottom:1px solid var(--card-border);
         }
-        table th:hover { background: rgba(99,102,241,0.12); }
-        table th .sort-arrow { font-size: 0.65rem; margin-left: 4px; opacity: 0.7; }
-        table td { padding: 10px 14px; border-bottom: 1px solid rgba(128,128,128,0.1); color: var(--text-secondary); white-space: nowrap; }
-        table tbody tr { transition: background 0.15s; }
-        table tbody tr:hover { background: var(--table-row-hover); }
-        table tbody tr.debit-row { border-left: 4px solid var(--red); }
-        table tbody tr.credit-row { border-left: 4px solid var(--green); }
+        table th:hover { background:rgba(99,102,241,0.12); }
+        table th .sort-arrow { font-size:0.65rem; margin-left:4px; opacity:0.7; }
+        table td { padding:10px 14px; border-bottom:1px solid rgba(128,128,128,0.1); color:var(--text-secondary); white-space:nowrap; }
+        table tbody tr { transition:background 0.15s; }
+        table tbody tr:hover { background:var(--table-row-hover); }
+        table tbody tr.debit-row { border-left:4px solid var(--red); }
+        table tbody tr.credit-row { border-left:4px solid var(--green); }
         .badge {
-            padding: 4px 10px;
-            border-radius: 20px;
-            font-size: 0.72rem;
-            font-weight: 700;
-            letter-spacing: 0.3px;
-            text-transform: uppercase;
-            display: inline-block;
+            padding:4px 10px; border-radius:20px; font-size:0.72rem; font-weight:700; letter-spacing:0.3px;
+            text-transform:uppercase; display:inline-block;
         }
-        .badge-green { background: var(--badge-green-bg); color: var(--badge-green-text); }
-        .badge-red { background: var(--badge-red-bg); color: var(--badge-red-text); }
-        .badge-yellow { background: var(--badge-yellow-bg); color: var(--badge-yellow-text); }
-        .badge-purple { background: var(--badge-purple-bg); color: var(--badge-purple-text); }
-        .badge-orange { background: var(--badge-yellow-bg); color: var(--orange); }
+        .badge-green { background:var(--badge-green-bg); color:var(--badge-green-text); }
+        .badge-red { background:var(--badge-red-bg); color:var(--badge-red-text); }
+        .badge-yellow { background:var(--badge-yellow-bg); color:var(--badge-yellow-text); }
+        .badge-purple { background:var(--badge-purple-bg); color:var(--badge-purple-text); }
+        .badge-orange { background:var(--badge-yellow-bg); color:var(--orange); }
 
-        /* CHARTS */
-        .charts-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
-            gap: 16px;
-            margin-bottom: 20px;
-        }
+        /* Charts */
+        .charts-grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(380px, 1fr)); gap:16px; margin-bottom:20px; }
         .chart-card {
-            background: var(--card-bg);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid var(--card-border);
-            border-radius: var(--radius);
-            box-shadow: var(--shadow);
-            padding: 20px;
-            position: relative;
+            background:var(--card-bg); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px);
+            border:1px solid var(--card-border); border-radius:var(--radius); box-shadow:var(--shadow);
+            padding:20px; position:relative;
         }
-        .chart-card canvas { max-height: 300px; width: 100% !important; }
-        .chart-title { font-size: 0.9rem; font-weight: 700; margin-bottom: 12px; color: var(--text); }
+        .chart-card canvas { max-height:300px; width:100% !important; }
+        .chart-title { font-size:0.9rem; font-weight:700; margin-bottom:12px; color:var(--text); }
 
-        /* CALENDAR */
+        /* Calendar */
         .calendar-container {
-            background: var(--card-bg);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid var(--card-border);
-            border-radius: var(--radius);
-            box-shadow: var(--shadow);
-            padding: 20px;
-            margin-bottom: 20px;
+            background:var(--card-bg); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px);
+            border:1px solid var(--card-border); border-radius:var(--radius); box-shadow:var(--shadow);
+            padding:20px; margin-bottom:20px;
         }
-        .calendar-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 12px;
-            margin-bottom: 16px;
-            flex-wrap: wrap;
-        }
-        .calendar-nav { display: flex; align-items: center; gap: 8px; }
+        .calendar-header { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:16px; flex-wrap:wrap; }
+        .calendar-nav { display:flex; align-items:center; gap:8px; }
         .calendar-nav button {
-            padding: 8px 12px;
-            border-radius: var(--radius-xs);
-            border: 1px solid var(--input-border);
-            background: var(--input-bg);
-            color: var(--text);
-            cursor: pointer;
-            font-size: 0.85rem;
-            font-weight: 600;
-            transition: all 0.2s;
+            padding:8px 12px; border-radius:var(--radius-xs); border:1px solid var(--input-border);
+            background:var(--input-bg); color:var(--text); cursor:pointer; font-size:0.85rem; font-weight:600;
+            transition:all 0.2s;
         }
-        .calendar-nav button:hover { background: var(--accent); color: #fff; border-color: var(--accent); }
-        .calendar-title { font-size: 1.1rem; font-weight: 700; min-width: 160px; text-align: center; }
-        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
-        .calendar-day-header {
-            text-align: center;
-            font-weight: 700;
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            color: var(--text-muted);
-            padding: 8px 4px;
-            letter-spacing: 0.5px;
-        }
+        .calendar-nav button:hover { background:var(--accent); color:#fff; border-color:var(--accent); }
+        .calendar-title { font-size:1.1rem; font-weight:700; min-width:160px; text-align:center; }
+        .calendar-grid { display:grid; grid-template-columns:repeat(7, 1fr); gap:4px; }
+        .calendar-day-header { text-align:center; font-weight:700; font-size:0.75rem; text-transform:uppercase; color:var(--text-muted); padding:8px 4px; letter-spacing:0.5px; }
         .calendar-day {
-            aspect-ratio: 1 / 1;
-            border-radius: var(--radius-xs);
-            padding: 8px;
-            cursor: pointer;
-            transition: background 0.2s, transform 0.15s;
-            border: 1px solid transparent;
-            min-height: 70px;
-            display: flex;
-            flex-direction: column;
-            font-size: 0.8rem;
-            position: relative;
-            background: rgba(128,128,128,0.05);
+            aspect-ratio:1/1; border-radius:var(--radius-xs); padding:8px; cursor:pointer; transition:background 0.2s, transform 0.15s;
+            border:1px solid transparent; min-height:70px; display:flex; flex-direction:column; font-size:0.8rem;
+            position:relative; background:rgba(128,128,128,0.05);
         }
-        .calendar-day:hover { background: rgba(99,102,241,0.08); border-color: var(--input-border); transform: scale(1.02); }
-        .calendar-day.today { border: 2px solid var(--calendar-today); background: rgba(99,102,241,0.08); }
-        .calendar-day.selected { background: var(--calendar-selected); border: 2px solid var(--accent); }
-        .calendar-day.other-month { opacity: 0.35; pointer-events: none; }
-        .calendar-day .day-number { font-weight: 700; margin-bottom: 4px; font-size: 0.85rem; }
-        .calendar-day .day-indicator {
-            font-size: 0.68rem;
-            line-height: 1.3;
-            font-weight: 600;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
-        .calendar-day .day-indicator.credit { color: var(--green); }
-        .calendar-day .day-indicator.debit { color: var(--red); }
+        .calendar-day:hover { background:rgba(99,102,241,0.08); border-color:var(--input-border); transform:scale(1.02); }
+        .calendar-day.today { border:2px solid var(--calendar-today); background:rgba(99,102,241,0.08); }
+        .calendar-day.selected { background:var(--calendar-selected); border:2px solid var(--accent); }
+        .calendar-day.other-month { opacity:0.35; pointer-events:none; }
+        .calendar-day .day-number { font-weight:700; margin-bottom:4px; font-size:0.85rem; }
+        .calendar-day .day-indicator { font-size:0.68rem; line-height:1.3; font-weight:600; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+        .calendar-day .day-indicator.credit { color:var(--green); }
+        .calendar-day .day-indicator.debit { color:var(--red); }
 
-        /* TOASTS */
-        .toast-container {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            z-index: 9999;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            pointer-events: none;
-        }
+        /* Toasts */
+        .toast-container { position:fixed; top:20px; right:20px; z-index:9999; display:flex; flex-direction:column; gap:8px; pointer-events:none; }
         .toast {
-            padding: 14px 20px;
-            border-radius: var(--radius-sm);
-            background: var(--card-bg);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid var(--card-border);
-            box-shadow: var(--shadow-hover);
-            font-weight: 600;
-            font-size: 0.85rem;
-            color: var(--text);
-            pointer-events: auto;
-            animation: slideInRight 0.35s ease;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            min-width: 280px;
-            max-width: 400px;
+            padding:14px 20px; border-radius:var(--radius-sm); background:var(--card-bg);
+            backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px); border:1px solid var(--card-border);
+            box-shadow:var(--shadow-hover); font-weight:600; font-size:0.85rem; color:var(--text);
+            pointer-events:auto; animation:slideInRight 0.35s ease; display:flex; align-items:center; gap:10px;
+            min-width:280px; max-width:400px;
         }
-        .toast.success { border-left: 4px solid var(--toast-success); }
-        .toast.error { border-left: 4px solid var(--toast-error); }
-        .toast.info { border-left: 4px solid var(--toast-info); }
-        .toast .toast-icon { font-size: 1.2rem; flex-shrink: 0; }
-        @keyframes slideInRight { from { opacity: 0; transform: translateX(60px); } to { opacity: 1; transform: translateX(0); } }
-        .toast.removing { animation: fadeOut 0.3s ease forwards; }
-        @keyframes fadeOut { to { opacity: 0; transform: translateX(40px); } }
+        .toast.success { border-left:4px solid var(--toast-success); }
+        .toast.error { border-left:4px solid var(--toast-error); }
+        .toast.info { border-left:4px solid var(--toast-info); }
+        .toast .toast-icon { font-size:1.2rem; flex-shrink:0; }
+        @keyframes slideInRight { from { opacity:0; transform:translateX(60px); } to { opacity:1; transform:translateX(0); } }
+        .toast.removing { animation:fadeOut 0.3s ease forwards; }
+        @keyframes fadeOut { to { opacity:0; transform:translateX(40px); } }
 
-        /* LOADING OVERLAY */
+        /* Loading overlay */
         .loading-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: var(--overlay-bg);
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
-            z-index: 10000;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: 16px;
-            transition: opacity 0.4s;
+            position:fixed; top:0; left:0; width:100%; height:100%; background:var(--overlay-bg);
+            backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px); z-index:10000; display:flex;
+            flex-direction:column; align-items:center; justify-content:center; gap:16px; transition:opacity 0.4s;
         }
-        .loading-overlay.hidden { opacity: 0; pointer-events: none; }
-        .spinner {
-            width: 56px;
-            height: 56px;
-            border: 4px solid rgba(255,255,255,0.2);
-            border-top-color: var(--accent);
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-        }
-        @keyframes spin { to { transform: rotate(360deg); } }
-        .loading-text { font-size: 1rem; font-weight: 700; color: #fff; letter-spacing: 0.5px; }
+        .loading-overlay.hidden { opacity:0; pointer-events:none; }
+        .spinner { width:56px; height:56px; border:4px solid rgba(255,255,255,0.2); border-top-color:var(--accent); border-radius:50%; animation:spin 0.8s linear infinite; }
+        @keyframes spin { to { transform:rotate(360deg); } }
+        .loading-text { font-size:1rem; font-weight:700; color:#fff; letter-spacing:0.5px; }
 
-        /* RESPONSIVE */
-        @media (max-width: 1024px) {
-            .charts-grid { grid-template-columns: 1fr; }
-            .cards-row { grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); }
+        /* Responsive */
+        @media (max-width:1024px) {
+            .charts-grid { grid-template-columns:1fr; }
+            .cards-row { grid-template-columns:repeat(auto-fit, minmax(160px, 1fr)); }
         }
-        @media (max-width: 768px) {
-            .sidebar { transform: translateX(-100%); width: var(--sidebar-width) !important; }
-            .sidebar.mobile-open { transform: translateX(0); box-shadow: 4px 0 30px rgba(0,0,0,0.25); }
-            .sidebar.collapsed { width: var(--sidebar-width) !important; }
-            .sidebar.collapsed .nav-item .label { opacity: 1; width: auto; display: inline; }
-            .sidebar.collapsed .sidebar-title { opacity: 1; width: auto; }
-            .sidebar.collapsed .nav-item { justify-content: flex-start; padding: 11px 14px; }
-            .sidebar.collapsed .sidebar-footer { font-size: 0.75rem; }
-            .main-wrapper { margin-left: 0 !important; }
-            .hamburger { display: block; }
-            .header-title { font-size: 0.95rem; }
-            .header-actions .btn span { display: none; }
-            .header-actions .btn { padding: 9px 12px; }
-            .content { padding: 12px; }
-            .cards-row { grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; }
-            .card { padding: 14px; border-radius: var(--radius-sm); }
-            .card-value { font-size: 1.3rem; }
-            .filters-bar { padding: 10px 12px; gap: 8px; }
-            .filter-group { min-width: 100px; flex: 1 1 100px; }
-            .charts-grid { grid-template-columns: 1fr; gap: 10px; }
-            .chart-card { padding: 12px; border-radius: var(--radius-sm); }
-            .calendar-container { padding: 12px; border-radius: var(--radius-sm); }
-            .calendar-day { min-height: 50px; padding: 4px; font-size: 0.7rem; }
-            .calendar-day .day-indicator { font-size: 0.6rem; }
-            .toast-container { top: 10px; right: 10px; left: 10px; }
-            .toast { min-width: auto; max-width: 100%; }
+        @media (max-width:768px) {
+            .sidebar { transform:translateX(-100%); width:var(--sidebar-width) !important; }
+            .sidebar.mobile-open { transform:translateX(0); box-shadow:4px 0 30px rgba(0,0,0,0.25); }
+            .sidebar.collapsed { width:var(--sidebar-width) !important; }
+            .sidebar.collapsed .nav-item .label { opacity:1; width:auto; display:inline; }
+            .sidebar.collapsed .sidebar-title { opacity:1; width:auto; }
+            .sidebar.collapsed .nav-item { justify-content:flex-start; padding:11px 14px; }
+            .sidebar.collapsed .sidebar-footer { font-size:0.75rem; }
+            .main-wrapper { margin-left:0 !important; }
+            .hamburger { display:block; }
+            .header-title { font-size:0.95rem; }
+            .header-actions .btn span { display:none; }
+            .header-actions .btn { padding:9px 12px; }
+            .content { padding:12px; }
+            .cards-row { grid-template-columns:repeat(auto-fit, minmax(140px, 1fr)); gap:10px; }
+            .card { padding:14px; border-radius:var(--radius-sm); }
+            .card-value { font-size:1.3rem; }
+            .filters-bar { padding:10px 12px; gap:8px; }
+            .filter-group { min-width:100px; flex:1 1 100px; }
+            .charts-grid { grid-template-columns:1fr; gap:10px; }
+            .chart-card { padding:12px; border-radius:var(--radius-sm); }
+            .calendar-container { padding:12px; border-radius:var(--radius-sm); }
+            .calendar-day { min-height:50px; padding:4px; font-size:0.7rem; }
+            .calendar-day .day-indicator { font-size:0.6rem; }
+            .toast-container { top:10px; right:10px; left:10px; }
+            .toast { min-width:auto; max-width:100%; }
         }
-        @media (max-width: 480px) {
-            .cards-row { grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 8px; }
-            .card { padding: 10px; }
-            .card-value { font-size: 1.1rem; }
-            .card-icon { width: 32px; height: 32px; font-size: 1rem; border-radius: 8px; }
-            .header { padding: 0 12px; gap: 6px; }
-            .btn { padding: 7px 10px; font-size: 0.75rem; }
+        @media (max-width:480px) {
+            .cards-row { grid-template-columns:repeat(auto-fit, minmax(120px, 1fr)); gap:8px; }
+            .card { padding:10px; }
+            .card-value { font-size:1.1rem; }
+            .card-icon { width:32px; height:32px; font-size:1rem; border-radius:8px; }
+            .header { padding:0 12px; gap:6px; }
+            .btn { padding:7px 10px; font-size:0.75rem; }
         }
 
         .sidebar-overlay {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.4);
-            z-index: 999;
-            display: none;
+            position:fixed; top:0; left:0; width:100%; height:100%;
+            background:rgba(0,0,0,0.4); z-index:999; display:none;
         }
-        .sidebar-overlay.visible { display: block; }
+        .sidebar-overlay.visible { display:block; }
 
-        .empty-state {
-            text-align: center;
-            padding: 40px 20px;
-            color: var(--text-muted);
-            font-size: 0.95rem;
-        }
-        .empty-state .icon { font-size: 3rem; margin-bottom: 12px; opacity: 0.5; }
+        .empty-state { text-align:center; padding:40px 20px; color:var(--text-muted); font-size:0.95rem; }
+        .empty-state .icon { font-size:3rem; margin-bottom:12px; opacity:0.5; }
     </style>
 </head>
 <body>
@@ -852,6 +464,7 @@
 
     <script>
         (function() {
+            // ===================== UTILITÁRIOS =====================
             const $ = (sel, ctx = document) => ctx.querySelector(sel);
             const $$ = (sel, ctx = document) => [...ctx.querySelectorAll(sel)];
 
@@ -865,28 +478,23 @@
 
             function parseCSV(text) {
                 const rows = [];
-                let row = [];
-                let field = '';
-                let inQuotes = false;
+                let row = [], field = '', inQuotes = false;
                 for (let i = 0; i < text.length; i++) {
                     const c = text[i];
                     if (inQuotes) {
                         if (c === '"') {
                             if (i + 1 < text.length && text[i + 1] === '"') { field += '"'; i++; }
-                            else { inQuotes = false; }
-                        } else { field += c; }
+                            else inQuotes = false;
+                        } else field += c;
                     } else {
-                        if (c === '"') { inQuotes = true; }
+                        if (c === '"') inQuotes = true;
                         else if (c === ',') { row.push(field); field = ''; }
                         else if (c === '\n' || c === '\r') {
                             if (c === '\r' && i + 1 < text.length && text[i + 1] === '\n') i++;
                             row.push(field); field = '';
-                            // Ignora linhas completamente vazias (sem campos ou apenas um campo vazio)
-                            if (row.length > 1 || (row.length === 1 && row[0].trim() !== '')) {
-                                rows.push(row);
-                            }
+                            if (row.length > 1 || (row.length === 1 && row[0].trim() !== '')) rows.push(row);
                             row = [];
-                        } else { field += c; }
+                        } else field += c;
                     }
                 }
                 if (field !== '' || row.length > 0) {
@@ -907,11 +515,11 @@
                 let negative = s.startsWith('-');
                 if (negative) s = s.substring(1);
                 if (s.startsWith('(') && s.endsWith(')')) { negative = true; s = s.substring(1, s.length - 1); }
-                if (s.includes(',')) { s = s.replace(/\./g, '').replace(',', '.'); }
+                if (s.includes(',')) s = s.replace(/\./g, '').replace(',', '.');
                 else {
                     const dotCount = (s.match(/\./g) || []).length;
                     if (dotCount === 1) { const parts = s.split('.'); s = parts[0] + '.' + parts[1]; }
-                    else if (dotCount > 1) { s = s.replace(/\./g, ''); }
+                    else if (dotCount > 1) s = s.replace(/\./g, '');
                 }
                 let num = parseFloat(s);
                 if (isNaN(num)) num = 0;
@@ -941,6 +549,7 @@
                 return Math.max(0, Math.floor((now.getTime() - dateObj.getTime()) / 86400000));
             }
 
+            // ===================== CONSTANTES E ESTADO =====================
             const SHEET_BASE = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSWlUNgP29Erp8Rh5AZPg430wul7T9IwPBPgozPQpO2ig9g8gpJoTn4JNfcKAbBSNH59VngkPE4A7dF/pub';
             const DEBITOS_GID = '1145670122';
             const CREDITOS_GID = '902301839';
@@ -951,13 +560,18 @@
                 theme: localStorage.getItem('dash_theme') || 'light',
                 sidebarCollapsed: localStorage.getItem('dash_sidebar') === 'collapsed',
                 mobileSidebarOpen: false,
-                charts: {},
+                charts: {}, // { key: chartInstance }
                 filters: {
                     resumo: { categoria:'', pessoa:'', status:'', forma:'', banco:'', ano:'', mes:'', dia:'' },
                     debitos: { categoria:'', pessoa:'', status:'', forma:'', banco:'', ano:'', mes:'', dia:'' },
                     creditos: { categoria:'', pessoa:'', status:'', forma:'', banco:'', ano:'', mes:'', dia:'' },
-                    dre: { ano:'', mes:'' }, bancos: { ano:'', mes:'' }, pessoas: { ano:'', mes:'' }, formas: { ano:'', mes:'' },
-                    inadimplencia: { tipo:'todos', ano:'', mes:'' }, comparativo: { ano:'' }, analise: { ano:'' }
+                    dre: { ano:'', mes:'' },
+                    bancos: { ano:'', mes:'' },
+                    pessoas: { ano:'', mes:'' },
+                    formas: { ano:'', mes:'' },
+                    inadimplencia: { tipo:'todos', ano:'', mes:'' },
+                    comparativo: { ano:'' },
+                    analise: { ano:'' }
                 },
                 sort: { tableId:null, column:null, direction:'asc' },
                 calendarMonth: { year:new Date().getFullYear(), month:new Date().getMonth() },
@@ -966,12 +580,13 @@
                 creditosCalendarMonth: { year:new Date().getFullYear(), month:new Date().getMonth() }
             };
 
+            // ===================== CARREGAMENTO DE DADOS =====================
             async function fetchCSV(gid) {
                 const url = `${SHEET_BASE}?gid=${gid}&single=true&output=csv`;
                 const resp = await fetch(url, { cache: 'no-store' });
                 if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
                 const text = await resp.text();
-                if (text.trim().startsWith('<!DOCTYPE') || text.trim().startsWith('<html')) throw new Error('Resposta inválida');
+                if (text.trim().startsWith('<!DOCTYPE') || text.trim().startsWith('<html')) throw new Error('Resposta inválida (HTML)');
                 return text;
             }
 
@@ -988,10 +603,10 @@
                 const bancoIdx = headers.findIndex(h => h.includes('banco') || h.includes('bank') || h.includes('instituicao'));
                 const pessoaIdx = headers.findIndex(h => h.includes('pessoa') || h.includes('nome') || h.includes('cliente') || h.includes('fornecedor'));
                 if (dataIdx === -1 || valIdx === -1) return [];
+
                 const result = [];
                 for (let i = 1; i < rows.length; i++) {
                     const r = rows[i];
-                    // Ignora linhas onde todas as colunas estão vazias (considera espaços e nulos)
                     if (!r || r.length === 0 || r.every(c => !c || String(c).trim() === '')) continue;
                     const rawData = dataIdx >= 0 ? r[dataIdx] : '';
                     const dateObj = parseDateBR(rawData);
@@ -999,18 +614,25 @@
                     const valNum = parseValueBR(rawVal);
                     const rawStatus = statusIdx >= 0 ? r[statusIdx] : 'false';
                     const statusNorm = normalizeStatus(rawStatus);
-                    const desc = descIdx >= 0 ? (r[descIdx] || '') : '';
-                    const cat = catIdx >= 0 ? (r[catIdx] || 'Sem categoria') : 'Sem categoria';
-                    const forma = formaIdx >= 0 ? (r[formaIdx] || 'Não informado') : 'Não informado';
-                    const banco = bancoIdx >= 0 ? (r[bancoIdx] || 'Não informado') : 'Não informado';
-                    const pessoa = pessoaIdx >= 0 ? (r[pessoaIdx] || 'Não informado') : 'Não informado';
                     result.push({
-                        data: rawData, dataOriginal: rawData, dateObj: dateObj, descricao: desc, categoria: cat,
-                        valor: valNum, valorAbs: Math.abs(valNum), status: statusNorm, statusRaw: rawStatus,
-                        formaPagamento: forma, banco: banco, pessoa: pessoa, tipo: tipo,
-                        dia: dateObj ? dateObj.getDate() : 0, mes: dateObj ? dateObj.getMonth() : 0,
+                        data: rawData,
+                        dataOriginal: rawData,
+                        dateObj: dateObj,
+                        descricao: descIdx >= 0 ? (r[descIdx] || '') : '',
+                        categoria: catIdx >= 0 ? (r[catIdx] || 'Sem categoria') : 'Sem categoria',
+                        valor: valNum,
+                        valorAbs: Math.abs(valNum),
+                        status: statusNorm,
+                        statusRaw: rawStatus,
+                        formaPagamento: formaIdx >= 0 ? (r[formaIdx] || 'Não informado') : 'Não informado',
+                        banco: bancoIdx >= 0 ? (r[bancoIdx] || 'Não informado') : 'Não informado',
+                        pessoa: pessoaIdx >= 0 ? (r[pessoaIdx] || 'Não informado') : 'Não informado',
+                        tipo: tipo,
+                        dia: dateObj ? dateObj.getDate() : 0,
+                        mes: dateObj ? dateObj.getMonth() : 0,
                         mesLabel: dateObj ? dateObj.toLocaleDateString('pt-BR', { month: 'long' }) : '',
-                        ano: dateObj ? dateObj.getFullYear() : 0, daysLate: getDaysLate(dateObj, statusNorm)
+                        ano: dateObj ? dateObj.getFullYear() : 0,
+                        daysLate: getDaysLate(dateObj, statusNorm)
                     });
                 }
                 return result;
@@ -1028,30 +650,976 @@
                     renderCurrentPage();
                     if (showToast) showToast('Dados carregados com sucesso!', 'success');
                 } catch (err) {
-                    console.error('Erro:', err);
+                    console.error('Erro ao carregar:', err);
                     if (showToast) showToast('Erro ao carregar: ' + err.message, 'error');
-                    if (allTransactions.length === 0) { debitsData = []; creditsData = []; allTransactions = []; dataLoaded = true; renderCurrentPage(); }
-                } finally { setTimeout(() => overlay.classList.add('hidden'), 300); }
+                    // Garante que a UI não fique presa
+                    dataLoaded = true;
+                    renderCurrentPage();
+                } finally {
+                    setTimeout(() => overlay.classList.add('hidden'), 300);
+                }
             }
 
-            function getUniqueValues(key, data) { const set = new Set(); data.forEach(t => { if (t[key]) set.add(t[key]); }); return [...set].sort((a,b) => String(a).localeCompare(String(b), 'pt-BR')); }
-            function getYears(data) { const years = new Set(); data.forEach(t => { if (t.ano) years.add(t.ano); }); const arr = [...years].sort((a,b) => b-a); if (!arr.length) arr.push(new Date().getFullYear()); return arr; }
+            // ===================== FUNÇÕES AUXILIARES DE DADOS =====================
+            function getUniqueValues(key, data) {
+                const set = new Set();
+                data.forEach(t => { if (t[key]) set.add(t[key]); });
+                return [...set].sort((a, b) => String(a).localeCompare(String(b), 'pt-BR'));
+            }
+            function getYears(data) {
+                const years = new Set();
+                data.forEach(t => { if (t.ano) years.add(t.ano); });
+                const arr = [...years].sort((a, b) => b - a);
+                if (!arr.length) arr.push(new Date().getFullYear());
+                return arr;
+            }
             function getMonthLabel(m) { return ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'][m] || ''; }
-            function filterTransactions(data, f) { return data.filter(t => (!f.categoria || t.categoria === f.categoria) && (!f.pessoa || t.pessoa === f.pessoa) && (!f.status || t.status === f.status) && (!f.forma || t.formaPagamento === f.forma) && (!f.banco || t.banco === f.banco) && (!f.ano || t.ano === parseInt(f.ano)) && (!f.mes || t.mes === parseInt(f.mes)) && (!f.dia || t.dia === parseInt(f.dia))); }
-            function getFilteredData(page) { const f = state.filters[page] || {}; if (page === 'resumo') return filterTransactions(allTransactions, f); if (page === 'debitos') return filterTransactions(debitsData, f); if (page === 'creditos') return filterTransactions(creditsData, f); if (page === 'inadimplencia') { const base = f.tipo === 'credito' ? creditsData : f.tipo === 'debito' ? debitsData : allTransactions; return filterTransactions(base, f); } return allTransactions; }
-            function sumByType(data, tipo) { return data.filter(t => t.tipo === tipo).reduce((s,t) => s + t.valorAbs, 0); }
+            function filterTransactions(data, f) {
+                return data.filter(t =>
+                    (!f.categoria || t.categoria === f.categoria) &&
+                    (!f.pessoa || t.pessoa === f.pessoa) &&
+                    (!f.status || t.status === f.status) &&
+                    (!f.forma || t.formaPagamento === f.forma) &&
+                    (!f.banco || t.banco === f.banco) &&
+                    (!f.ano || t.ano === parseInt(f.ano)) &&
+                    (!f.mes || t.mes === parseInt(f.mes)) &&
+                    (!f.dia || t.dia === parseInt(f.dia))
+                );
+            }
+            function getFilteredData(page) {
+                const f = state.filters[page] || {};
+                if (page === 'resumo') return filterTransactions(allTransactions, f);
+                if (page === 'debitos') return filterTransactions(debitsData, f);
+                if (page === 'creditos') return filterTransactions(creditsData, f);
+                if (page === 'inadimplencia') {
+                    const base = f.tipo === 'credito' ? creditsData : f.tipo === 'debito' ? debitsData : allTransactions;
+                    return filterTransactions(base, f);
+                }
+                return allTransactions;
+            }
+            function sumByType(data, tipo) { return data.filter(t => t.tipo === tipo).reduce((s, t) => s + t.valorAbs, 0); }
             function getMonthKey(t) { return `${t.ano}-${String(t.mes + 1).padStart(2, '0')}`; }
-            function groupByMonth(data, tipo) { const map = {}; data.filter(t => t.tipo === tipo || !tipo).forEach(t => { const key = getMonthKey(t); if (!map[key]) map[key] = { key, ano: t.ano, mes: t.mes, total:0, count:0 }; map[key].total += t.valorAbs; map[key].count++; }); return Object.values(map).sort((a,b) => a.key.localeCompare(b.key)); }
-            function groupByYear(data, tipo) { const map = {}; data.filter(t => t.tipo === tipo || !tipo).forEach(t => { const key = String(t.ano); if (!map[key]) map[key] = { ano: t.ano, total:0, count:0 }; map[key].total += t.valorAbs; map[key].count++; }); return Object.values(map).sort((a,b) => a.ano - b.ano); }
-            function groupByCategory(data, tipo) { const map = {}; data.filter(t => t.tipo === tipo).forEach(t => { const key = t.categoria; if (!map[key]) map[key] = { categoria:key, total:0, count:0 }; map[key].total += t.valorAbs; map[key].count++; }); return Object.values(map).sort((a,b) => b.total - a.total); }
-            function groupByBanco(data, tipo) { const map = {}; data.filter(t => t.tipo === tipo).forEach(t => { const key = t.banco; if (!map[key]) map[key] = { banco:key, total:0, count:0 }; map[key].total += t.valorAbs; map[key].count++; }); return Object.values(map).sort((a,b) => b.total - a.total); }
-            function groupByPessoa(data, tipo) { const map = {}; data.filter(t => t.tipo === tipo).forEach(t => { const key = t.pessoa; if (!map[key]) map[key] = { pessoa:key, total:0, count:0 }; map[key].total += t.valorAbs; map[key].count++; }); return Object.values(map).sort((a,b) => b.total - a.total); }
-            function groupByForma(data, tipo) { const map = {}; data.filter(t => t.tipo === tipo).forEach(t => { const key = t.formaPagamento; if (!map[key]) map[key] = { forma:key, total:0, count:0 }; map[key].total += t.valorAbs; map[key].count++; }); return Object.values(map).sort((a,b) => b.total - a.total); }
-            function getTransactionsForDay(data, y, m, d) { return data.filter(t => t.ano === y && t.mes === m && t.dia === d); }
+            function groupByMonth(data, tipo) {
+                const map = {};
+                data.filter(t => t.tipo === tipo || !tipo).forEach(t => {
+                    const key = getMonthKey(t);
+                    if (!map[key]) map[key] = { key, ano: t.ano, mes: t.mes, total: 0, count: 0 };
+                    map[key].total += t.valorAbs;
+                    map[key].count++;
+                });
+                return Object.values(map).sort((a, b) => a.key.localeCompare(b.key));
+            }
+            function groupByYear(data, tipo) {
+                const map = {};
+                data.filter(t => t.tipo === tipo || !tipo).forEach(t => {
+                    const key = String(t.ano);
+                    if (!map[key]) map[key] = { ano: t.ano, total: 0, count: 0 };
+                    map[key].total += t.valorAbs;
+                    map[key].count++;
+                });
+                return Object.values(map).sort((a, b) => a.ano - b.ano);
+            }
+            function groupByCategory(data, tipo) {
+                const map = {};
+                data.filter(t => t.tipo === tipo).forEach(t => {
+                    const key = t.categoria;
+                    if (!map[key]) map[key] = { categoria: key, total: 0, count: 0 };
+                    map[key].total += t.valorAbs;
+                    map[key].count++;
+                });
+                return Object.values(map).sort((a, b) => b.total - a.total);
+            }
+            function groupByBanco(data, tipo) {
+                const map = {};
+                data.filter(t => t.tipo === tipo).forEach(t => {
+                    const key = t.banco;
+                    if (!map[key]) map[key] = { banco: key, total: 0, count: 0 };
+                    map[key].total += t.valorAbs;
+                    map[key].count++;
+                });
+                return Object.values(map).sort((a, b) => b.total - a.total);
+            }
+            function groupByPessoa(data, tipo) {
+                const map = {};
+                data.filter(t => t.tipo === tipo).forEach(t => {
+                    const key = t.pessoa;
+                    if (!map[key]) map[key] = { pessoa: key, total: 0, count: 0 };
+                    map[key].total += t.valorAbs;
+                    map[key].count++;
+                });
+                return Object.values(map).sort((a, b) => b.total - a.total);
+            }
+            function groupByForma(data, tipo) {
+                const map = {};
+                data.filter(t => t.tipo === tipo).forEach(t => {
+                    const key = t.formaPagamento;
+                    if (!map[key]) map[key] = { forma: key, total: 0, count: 0 };
+                    map[key].total += t.valorAbs;
+                    map[key].count++;
+                });
+                return Object.values(map).sort((a, b) => b.total - a.total);
+            }
+            function getTransactionsForDay(data, y, m, d) {
+                return data.filter(t => t.ano === y && t.mes === m && t.dia === d);
+            }
 
-            // ... (restante do código idêntico ao anterior, mantendo as funções de renderização, filtros, gráficos, etc.)
-            // Para evitar repetição excessiva, as demais funções são as mesmas já apresentadas no código anterior.
-            // O restante do código permanece funcional e inalterado.
+            // ===================== RENDERIZAÇÃO =====================
+            function renderCurrentPage() {
+                if (!dataLoaded) return;
+                const page = state.currentPage;
+                // Atualiza título
+                const titles = {
+                    resumo: 'Resumo Geral', debitos: 'Débitos', creditos: 'Créditos', dre: 'D.R.E.',
+                    tendencias: 'Tendências', bancos: 'Bancos', pessoas: 'Pessoas', formas: 'Formas de Pagamento',
+                    inadimplencia: 'Inadimplência', calendario: 'Calendário Geral', comparativo: 'Comparativo Anual',
+                    analise: 'Análise Mensal'
+                };
+                $('#headerTitle').textContent = titles[page] || page;
+                // Ativa seção
+                $$('.page-section').forEach(s => s.classList.remove('active'));
+                const section = $('#page-' + page);
+                if (section) section.classList.add('active');
+                // Renderiza a página
+                switch (page) {
+                    case 'resumo': renderResumo(); break;
+                    case 'debitos': renderDebitos(); break;
+                    case 'creditos': renderCreditos(); break;
+                    case 'dre': renderDRE(); break;
+                    case 'tendencias': renderTendencias(); break;
+                    case 'bancos': renderBancos(); break;
+                    case 'pessoas': renderPessoas(); break;
+                    case 'formas': renderFormas(); break;
+                    case 'inadimplencia': renderInadimplencia(); break;
+                    case 'calendario': renderCalendario(); break;
+                    case 'comparativo': renderComparativo(); break;
+                    case 'analise': renderAnalise(); break;
+                }
+                // Atualiza filtros
+                updateFilterOptions();
+                // Atualiza classe ativa no menu
+                $$('.nav-item').forEach(n => n.classList.toggle('active', n.dataset.page === page));
+            }
+
+            function updateFilterOptions() {
+                // Atualiza os options dos selects com base nos dados disponíveis
+                // Isso é chamado após cada renderização
+                const pages = ['resumo', 'debitos', 'creditos', 'dre', 'bancos', 'pessoas', 'formas', 'inadimplencia', 'comparativo', 'analise'];
+                pages.forEach(page => {
+                    const container = $('#' + page + 'Filters');
+                    if (!container) return;
+                    const data = page === 'debitos' ? debitsData : page === 'creditos' ? creditsData : allTransactions;
+                    // Atualiza cada select que existe
+                    $$('select', container).forEach(sel => {
+                        const filterKey = sel.dataset.filter;
+                        const currentVal = sel.value;
+                        let options = [];
+                        if (filterKey === 'ano') options = getYears(data).map(y => String(y));
+                        else if (filterKey === 'mes') options = Array.from({length:12}, (_,i) => String(i));
+                        else options = getUniqueValues(filterKey, data);
+                        const placeholder = sel.dataset.placeholder || 'Todos';
+                        sel.innerHTML = `<option value="">${placeholder}</option>` + options.map(o => `<option value="${o}">${filterKey === 'mes' ? getMonthLabel(parseInt(o)) : o}</option>`).join('');
+                        sel.value = currentVal || '';
+                    });
+                });
+            }
+
+            function buildFiltersHTML(page, options) {
+                // options: { categorias, pessoas, status, formas, bancos, anos, meses }
+                const f = state.filters[page] || {};
+                return `
+                    <div class="filter-group">
+                        <label>Categoria</label>
+                        <select data-filter="categoria" data-placeholder="Todas">
+                            <option value="">Todas</option>
+                            ${options.categorias.map(c => `<option value="${c}">${c}</option>`).join('')}
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label>Pessoa</label>
+                        <select data-filter="pessoa" data-placeholder="Todas">
+                            <option value="">Todas</option>
+                            ${options.pessoas.map(p => `<option value="${p}">${p}</option>`).join('')}
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label>Status</label>
+                        <select data-filter="status" data-placeholder="Todos">
+                            <option value="">Todos</option>
+                            <option value="Pago">Pago</option>
+                            <option value="Pendente">Pendente</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label>Forma Pagamento</label>
+                        <select data-filter="forma" data-placeholder="Todas">
+                            <option value="">Todas</option>
+                            ${options.formas.map(fr => `<option value="${fr}">${fr}</option>`).join('')}
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label>Banco</label>
+                        <select data-filter="banco" data-placeholder="Todos">
+                            <option value="">Todos</option>
+                            ${options.bancos.map(b => `<option value="${b}">${b}</option>`).join('')}
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label>Ano</label>
+                        <select data-filter="ano" data-placeholder="Todos">
+                            <option value="">Todos</option>
+                            ${options.anos.map(a => `<option value="${a}">${a}</option>`).join('')}
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label>Mês</label>
+                        <select data-filter="mes" data-placeholder="Todos">
+                            <option value="">Todos</option>
+                            ${Array.from({length:12}, (_,i) => `<option value="${i}">${getMonthLabel(i)}</option>`).join('')}
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label>Dia</label>
+                        <input type="number" data-filter="dia" min="1" max="31" placeholder="Todos">
+                    </div>
+                `;
+            }
+
+            function renderCard(iconClass, label, value, sub = '', valueClass = '') {
+                return `<div class="card">
+                    <div class="card-icon ${iconClass}">${iconClass === 'green' ? '📈' : iconClass === 'red' ? '📉' : iconClass === 'purple' ? '💡' : '💰'}</div>
+                    <div class="card-label">${label}</div>
+                    <div class="card-value ${valueClass}">${value}</div>
+                    ${sub ? `<div class="card-sub">${sub}</div>` : ''}
+                </div>`;
+            }
+
+            function renderTable(containerId, data, columns, opts = {}) {
+                const container = $('#' + containerId);
+                if (!container) return;
+                if (!data.length) {
+                    container.innerHTML = `<div class="empty-state"><div class="icon">📭</div>Nenhum registro encontrado.</div>`;
+                    return;
+                }
+                const sortedData = sortData(data, columns);
+                let html = '<table><thead><tr>';
+                columns.forEach(col => {
+                    const arrow = state.sort.tableId === containerId && state.sort.column === col.key ? (state.sort.direction === 'asc' ? '▲' : '▼') : '';
+                    html += `<th data-col="${col.key}">${col.label} <span class="sort-arrow">${arrow}</span></th>`;
+                });
+                html += '</tr></thead><tbody>';
+                sortedData.forEach(row => {
+                    const rowClass = row.tipo === 'debito' ? 'debit-row' : 'credit-row';
+                    html += `<tr class="${rowClass}">`;
+                    columns.forEach(col => {
+                        let val = col.render ? col.render(row) : row[col.key];
+                        html += `<td>${val}</td>`;
+                    });
+                    html += '</tr>';
+                });
+                html += '</tbody></table>';
+                container.innerHTML = html;
+                // Ordenação
+                $$('th', container).forEach(th => {
+                    th.addEventListener('click', () => {
+                        const colKey = th.dataset.col;
+                        if (state.sort.tableId === containerId && state.sort.column === colKey) {
+                            state.sort.direction = state.sort.direction === 'asc' ? 'desc' : 'asc';
+                        } else {
+                            state.sort.tableId = containerId;
+                            state.sort.column = colKey;
+                            state.sort.direction = 'asc';
+                        }
+                        renderCurrentPage();
+                    });
+                });
+            }
+
+            function sortData(data, columns) {
+                if (!state.sort.tableId || !state.sort.column) return data;
+                const col = columns.find(c => c.key === state.sort.column);
+                if (!col) return data;
+                const dir = state.sort.direction === 'asc' ? 1 : -1;
+                return [...data].sort((a, b) => {
+                    let va = col.value ? col.value(a) : a[col.key];
+                    let vb = col.value ? col.value(b) : b[col.key];
+                    if (typeof va === 'string') va = va.toLowerCase();
+                    if (typeof vb === 'string') vb = vb.toLowerCase();
+                    if (va < vb) return -1 * dir;
+                    if (va > vb) return 1 * dir;
+                    return 0;
+                });
+            }
+
+            function createOrUpdateChart(key, config) {
+                if (state.charts[key]) {
+                    state.charts[key].data = config.data;
+                    state.charts[key].options = config.options;
+                    state.charts[key].update();
+                } else {
+                    const ctx = $(config.ctx);
+                    if (!ctx) return;
+                    state.charts[key] = new Chart(ctx, config);
+                }
+            }
+
+            function destroyChartsForPage(page) {
+                Object.keys(state.charts).forEach(key => {
+                    if (key.startsWith(page + '-')) {
+                        state.charts[key].destroy();
+                        delete state.charts[key];
+                    }
+                });
+            }
+
+            // ===================== RENDERIZAÇÃO DE PÁGINAS ESPECÍFICAS =====================
+            function renderResumo() {
+                const data = getFilteredData('resumo');
+                const totalDebitos = sumByType(data, 'debito');
+                const totalCreditos = sumByType(data, 'credito');
+                const saldo = totalCreditos - totalDebitos;
+                const pago = data.filter(t => t.status === 'Pago');
+                const pendente = data.filter(t => t.status === 'Pendente');
+                const cardsHTML = `
+                    ${renderCard('red', 'Total Débitos', formatCurrency(totalDebitos), '', 'red')}
+                    ${renderCard('green', 'Total Créditos', formatCurrency(totalCreditos), '', 'green')}
+                    ${renderCard(saldo >= 0 ? 'green' : 'red', 'Saldo', formatCurrency(saldo), '', saldo >= 0 ? 'green' : 'red')}
+                    ${renderCard('purple', 'Pagos', formatCurrency(sumByType(pago, 'credito') + sumByType(pago, 'debito')), `${pago.length} registros`, 'purple')}
+                    ${renderCard('yellow', 'Pendentes', formatCurrency(sumByType(pendente, 'credito') + sumByType(pendente, 'debito')), `${pendente.length} registros`, 'yellow')}
+                `;
+                $('#resumoCards').innerHTML = cardsHTML;
+
+                // Filtros
+                const anos = getYears(allTransactions);
+                const categorias = getUniqueValues('categoria', allTransactions);
+                const pessoas = getUniqueValues('pessoa', allTransactions);
+                const formas = getUniqueValues('formaPagamento', allTransactions);
+                const bancos = getUniqueValues('banco', allTransactions);
+                $('#resumoFilters').innerHTML = buildFiltersHTML('resumo', { categorias, pessoas, formas, bancos, anos });
+
+                // Gráficos
+                const monthDeb = groupByMonth(data, 'debito');
+                const monthCred = groupByMonth(data, 'credito');
+                const labelsMonths = monthDeb.map(m => getMonthLabel(m.mes) + '/' + m.ano);
+                const debValues = monthDeb.map(m => m.total);
+                const credValues = monthCred.map(m => m.total);
+                const catDeb = groupByCategory(data, 'debito');
+                const catCred = groupByCategory(data, 'credito');
+                $('#resumoCharts').innerHTML = `
+                    <div class="chart-card"><div class="chart-title">Débitos vs Créditos por Mês</div><canvas id="resumo-line"></canvas></div>
+                    <div class="chart-card"><div class="chart-title">Débitos por Categoria</div><canvas id="resumo-pie-deb"></canvas></div>
+                    <div class="chart-card"><div class="chart-title">Créditos por Categoria</div><canvas id="resumo-pie-cred"></canvas></div>
+                `;
+                if (window.Chart) {
+                    const lineCtx = $('#resumo-line');
+                    if (lineCtx) {
+                        createOrUpdateChart('resumo-line', {
+                            type: 'line',
+                            ctx: lineCtx,
+                            data: {
+                                labels: labelsMonths,
+                                datasets: [
+                                    { label: 'Débitos', data: debValues, borderColor: '#ef4444', backgroundColor: 'rgba(239,68,68,0.2)', fill: true },
+                                    { label: 'Créditos', data: credValues, borderColor: '#10b981', backgroundColor: 'rgba(16,185,129,0.2)', fill: true }
+                                ]
+                            },
+                            options: { responsive: true, maintainAspectRatio: false }
+                        });
+                    }
+                    const pieDebCtx = $('#resumo-pie-deb');
+                    if (pieDebCtx) {
+                        createOrUpdateChart('resumo-pie-deb', {
+                            type: 'pie',
+                            ctx: pieDebCtx,
+                            data: {
+                                labels: catDeb.map(c => c.categoria),
+                                datasets: [{ data: catDeb.map(c => c.total), backgroundColor: ['#ef4444','#f97316','#f59e0b','#dc2626','#b91c1c'] }]
+                            },
+                            options: { responsive: true, maintainAspectRatio: false }
+                        });
+                    }
+                    const pieCredCtx = $('#resumo-pie-cred');
+                    if (pieCredCtx) {
+                        createOrUpdateChart('resumo-pie-cred', {
+                            type: 'pie',
+                            ctx: pieCredCtx,
+                            data: {
+                                labels: catCred.map(c => c.categoria),
+                                datasets: [{ data: catCred.map(c => c.total), backgroundColor: ['#10b981','#34d399','#059669','#6ee7b7','#a7f3d0'] }]
+                            },
+                            options: { responsive: true, maintainAspectRatio: false }
+                        });
+                    }
+                } else {
+                    console.warn('Chart.js não carregado');
+                }
+
+                // Tabela
+                renderTable('resumoTable', data, [
+                    { key: 'data', label: 'Data', render: t => formatDateBR(t.dateObj) },
+                    { key: 'descricao', label: 'Descrição' },
+                    { key: 'categoria', label: 'Categoria' },
+                    { key: 'pessoa', label: 'Pessoa' },
+                    { key: 'banco', label: 'Banco' },
+                    { key: 'formaPagamento', label: 'Forma' },
+                    { key: 'status', label: 'Status', render: t => `<span class="badge ${t.status === 'Pago' ? 'badge-green' : 'badge-red'}">${t.status}</span>` },
+                    { key: 'valorAbs', label: 'Valor', value: t => t.valorAbs, render: t => `<strong class="${t.tipo === 'debito' ? 'debit-row' : 'credit-row'}">${formatCurrency(t.valorAbs)}</strong>` }
+                ]);
+            }
+
+            function renderDebitos() {
+                const data = getFilteredData('debitos');
+                const total = sumByType(data, 'debito');
+                const pago = data.filter(t => t.status === 'Pago').reduce((s, t) => s + t.valorAbs, 0);
+                const pendente = data.filter(t => t.status === 'Pendente').reduce((s, t) => s + t.valorAbs, 0);
+                $('#debitosCards').innerHTML = `
+                    ${renderCard('red', 'Total Débitos', formatCurrency(total), '', 'red')}
+                    ${renderCard('green', 'Pagos', formatCurrency(pago), 'débitos pagos', 'green')}
+                    ${renderCard('yellow', 'Pendentes', formatCurrency(pendente), 'débitos pendentes', 'yellow')}
+                    ${renderCard('purple', 'Registros', data.length, 'débitos', 'purple')}
+                `;
+                const anos = getYears(debitsData);
+                const categorias = getUniqueValues('categoria', debitsData);
+                const pessoas = getUniqueValues('pessoa', debitsData);
+                const formas = getUniqueValues('formaPagamento', debitsData);
+                const bancos = getUniqueValues('banco', debitsData);
+                $('#debitosFilters').innerHTML = buildFiltersHTML('debitos', { categorias, pessoas, formas, bancos, anos });
+                // Gráficos
+                const monthDeb = groupByMonth(data, 'debito');
+                const catDeb = groupByCategory(data, 'debito');
+                $('#debitosCharts').innerHTML = `
+                    <div class="chart-card"><div class="chart-title">Evolução dos Débitos</div><canvas id="debitos-bar"></canvas></div>
+                    <div class="chart-card"><div class="chart-title">Débitos por Categoria</div><canvas id="debitos-pie"></canvas></div>
+                `;
+                if (window.Chart) {
+                    createOrUpdateChart('debitos-bar', {
+                        type: 'bar', ctx: $('#debitos-bar'),
+                        data: { labels: monthDeb.map(m => getMonthLabel(m.mes) + '/' + m.ano), datasets: [{ label: 'Débitos', data: monthDeb.map(m => m.total), backgroundColor: '#ef4444' }] },
+                        options: { responsive: true, maintainAspectRatio: false }
+                    });
+                    createOrUpdateChart('debitos-pie', {
+                        type: 'pie', ctx: $('#debitos-pie'),
+                        data: { labels: catDeb.map(c => c.categoria), datasets: [{ data: catDeb.map(c => c.total), backgroundColor: ['#ef4444','#f97316','#f59e0b','#dc2626','#b91c1c'] }] },
+                        options: { responsive: true, maintainAspectRatio: false }
+                    });
+                }
+                // Calendário de débitos
+                renderCalendar('debitosCalendar', data, 'debito', state.debitosCalendarMonth);
+                // Tabela
+                renderTable('debitosTable', data, [
+                    { key: 'data', label: 'Data', render: t => formatDateBR(t.dateObj) },
+                    { key: 'descricao', label: 'Descrição' },
+                    { key: 'categoria', label: 'Categoria' },
+                    { key: 'pessoa', label: 'Pessoa' },
+                    { key: 'banco', label: 'Banco' },
+                    { key: 'formaPagamento', label: 'Forma' },
+                    { key: 'status', label: 'Status', render: t => `<span class="badge ${t.status === 'Pago' ? 'badge-green' : 'badge-red'}">${t.status}</span>` },
+                    { key: 'valorAbs', label: 'Valor', value: t => t.valorAbs, render: t => `<strong class="debit-row">${formatCurrency(t.valorAbs)}</strong>` }
+                ]);
+            }
+
+            function renderCreditos() {
+                const data = getFilteredData('creditos');
+                const total = sumByType(data, 'credito');
+                const pago = data.filter(t => t.status === 'Pago').reduce((s, t) => s + t.valorAbs, 0);
+                const pendente = data.filter(t => t.status === 'Pendente').reduce((s, t) => s + t.valorAbs, 0);
+                $('#creditosCards').innerHTML = `
+                    ${renderCard('green', 'Total Créditos', formatCurrency(total), '', 'green')}
+                    ${renderCard('green', 'Pagos', formatCurrency(pago), 'créditos pagos', 'green')}
+                    ${renderCard('yellow', 'Pendentes', formatCurrency(pendente), 'créditos pendentes', 'yellow')}
+                    ${renderCard('purple', 'Registros', data.length, 'créditos', 'purple')}
+                `;
+                const anos = getYears(creditsData);
+                const categorias = getUniqueValues('categoria', creditsData);
+                const pessoas = getUniqueValues('pessoa', creditsData);
+                const formas = getUniqueValues('formaPagamento', creditsData);
+                const bancos = getUniqueValues('banco', creditsData);
+                $('#creditosFilters').innerHTML = buildFiltersHTML('creditos', { categorias, pessoas, formas, bancos, anos });
+                const monthCred = groupByMonth(data, 'credito');
+                const catCred = groupByCategory(data, 'credito');
+                $('#creditosCharts').innerHTML = `
+                    <div class="chart-card"><div class="chart-title">Evolução dos Créditos</div><canvas id="creditos-bar"></canvas></div>
+                    <div class="chart-card"><div class="chart-title">Créditos por Categoria</div><canvas id="creditos-pie"></canvas></div>
+                `;
+                if (window.Chart) {
+                    createOrUpdateChart('creditos-bar', {
+                        type: 'bar', ctx: $('#creditos-bar'),
+                        data: { labels: monthCred.map(m => getMonthLabel(m.mes) + '/' + m.ano), datasets: [{ label: 'Créditos', data: monthCred.map(m => m.total), backgroundColor: '#10b981' }] },
+                        options: { responsive: true, maintainAspectRatio: false }
+                    });
+                    createOrUpdateChart('creditos-pie', {
+                        type: 'pie', ctx: $('#creditos-pie'),
+                        data: { labels: catCred.map(c => c.categoria), datasets: [{ data: catCred.map(c => c.total), backgroundColor: ['#10b981','#34d399','#059669','#6ee7b7','#a7f3d0'] }] },
+                        options: { responsive: true, maintainAspectRatio: false }
+                    });
+                }
+                renderCalendar('creditosCalendar', data, 'credito', state.creditosCalendarMonth);
+                renderTable('creditosTable', data, [
+                    { key: 'data', label: 'Data', render: t => formatDateBR(t.dateObj) },
+                    { key: 'descricao', label: 'Descrição' },
+                    { key: 'categoria', label: 'Categoria' },
+                    { key: 'pessoa', label: 'Pessoa' },
+                    { key: 'banco', label: 'Banco' },
+                    { key: 'formaPagamento', label: 'Forma' },
+                    { key: 'status', label: 'Status', render: t => `<span class="badge ${t.status === 'Pago' ? 'badge-green' : 'badge-red'}">${t.status}</span>` },
+                    { key: 'valorAbs', label: 'Valor', value: t => t.valorAbs, render: t => `<strong class="credit-row">${formatCurrency(t.valorAbs)}</strong>` }
+                ]);
+            }
+
+            function renderDRE() {
+                const f = state.filters.dre;
+                const data = filterTransactions(allTransactions, f);
+                const totalDeb = sumByType(data, 'debito');
+                const totalCred = sumByType(data, 'credito');
+                const lucro = totalCred - totalDeb;
+                const margem = totalCred > 0 ? (lucro / totalCred) * 100 : 0;
+                $('#dreCards').innerHTML = `
+                    ${renderCard('red', 'Receita Bruta', formatCurrency(totalCred), '', 'red')}
+                    ${renderCard('red', 'Despesas', formatCurrency(totalDeb), '', 'red')}
+                    ${renderCard(lucro >= 0 ? 'green' : 'red', 'Resultado Líquido', formatCurrency(lucro), '', lucro >= 0 ? 'green' : 'red')}
+                    ${renderCard(lucro >= 0 ? 'green' : 'red', 'Margem', margem.toFixed(2) + '%', '', lucro >= 0 ? 'green' : 'red')}
+                `;
+                const anos = getYears(allTransactions);
+                $('#dreFilters').innerHTML = `
+                    <div class="filter-group"><label>Ano</label><select data-filter="ano" data-placeholder="Todos"><option value="">Todos</option>${anos.map(a => `<option value="${a}">${a}</option>`).join('')}</select></div>
+                    <div class="filter-group"><label>Mês</label><select data-filter="mes" data-placeholder="Todos"><option value="">Todos</option>${Array.from({length:12}, (_,i) => `<option value="${i}">${getMonthLabel(i)}</option>`).join('')}</select></div>
+                `;
+                // Tabela DRÉ simplificada
+                const receitas = groupByCategory(data.filter(t => t.tipo === 'credito'), 'credito');
+                const despesas = groupByCategory(data.filter(t => t.tipo === 'debito'), 'debito');
+                let html = '<table><thead><tr><th>Descrição</th><th>Valor</th></tr></thead><tbody>';
+                html += `<tr class="credit-row"><td>Receita Total</td><td>${formatCurrency(totalCred)}</td></tr>`;
+                receitas.forEach(r => html += `<tr class="credit-row"><td>  ${r.categoria}</td><td>${formatCurrency(r.total)}</td></tr>`);
+                html += `<tr class="debit-row"><td>Despesa Total</td><td>${formatCurrency(totalDeb)}</td></tr>`;
+                despesas.forEach(d => html += `<tr class="debit-row"><td>  ${d.categoria}</td><td>${formatCurrency(d.total)}</td></tr>`);
+                html += `<tr><td><strong>Resultado Líquido</strong></td><td><strong>${formatCurrency(lucro)}</strong></td></tr></tbody></table>`;
+                $('#dreTable').innerHTML = html;
+                // Gráfico simples
+                $('#dreCharts').innerHTML = '<div class="chart-card"><div class="chart-title">Receita vs Despesa</div><canvas id="dre-bar"></canvas></div>';
+                if (window.Chart) {
+                    createOrUpdateChart('dre-bar', {
+                        type: 'bar', ctx: $('#dre-bar'),
+                        data: { labels: ['Receitas', 'Despesas', 'Lucro'], datasets: [{ label: 'Valores', data: [totalCred, totalDeb, lucro], backgroundColor: ['#10b981','#ef4444', lucro>=0?'#10b981':'#ef4444'] }] },
+                        options: { responsive: true, maintainAspectRatio: false }
+                    });
+                }
+            }
+
+            function renderTendencias() {
+                const data = allTransactions;
+                const monthData = groupByMonth(data);
+                const labels = monthData.map(m => getMonthLabel(m.mes) + '/' + m.ano);
+                const debitos = monthData.map(m => m.debitos || 0);
+                const creditos = monthData.map(m => m.creditos || 0);
+                // Preenche débitos e creditos por mês
+                const map = {};
+                allTransactions.forEach(t => {
+                    const key = getMonthKey(t);
+                    if (!map[key]) map[key] = { debitos: 0, creditos: 0 };
+                    if (t.tipo === 'debito') map[key].debitos += t.valorAbs;
+                    else map[key].creditos += t.valorAbs;
+                });
+                const sortedKeys = Object.keys(map).sort();
+                const debArr = sortedKeys.map(k => map[k].debitos);
+                const credArr = sortedKeys.map(k => map[k].creditos);
+                const labelsTend = sortedKeys.map(k => { const [ano, mes] = k.split('-'); return getMonthLabel(parseInt(mes)-1) + '/' + ano; });
+                const totalDeb = debArr.reduce((s, v) => s + v, 0);
+                const totalCred = credArr.reduce((s, v) => s + v, 0);
+                $('#tendenciasCards').innerHTML = `
+                    ${renderCard('purple', 'Média Débitos/mês', formatCurrency(totalDeb / (sortedKeys.length || 1)), '', 'purple')}
+                    ${renderCard('purple', 'Média Créditos/mês', formatCurrency(totalCred / (sortedKeys.length || 1)), '', 'purple')}
+                    ${renderCard('purple', 'Melhor Mês (Créditos)', sortedKeys.length ? getMonthLabel(parseInt(sortedKeys.reduce((best,k) => map[k].creditos > map[best].creditos ? k : best).split('-')[1])-1) : '-', '', 'purple')}
+                `;
+                $('#tendenciasCharts').innerHTML = '<div class="chart-card"><div class="chart-title">Tendência Débitos vs Créditos</div><canvas id="tendencias-line"></canvas></div>';
+                if (window.Chart) {
+                    createOrUpdateChart('tendencias-line', {
+                        type: 'line', ctx: $('#tendencias-line'),
+                        data: { labels: labelsTend, datasets: [
+                            { label: 'Débitos', data: debArr, borderColor: '#ef4444', backgroundColor: 'rgba(239,68,68,0.2)', fill: true },
+                            { label: 'Créditos', data: credArr, borderColor: '#10b981', backgroundColor: 'rgba(16,185,129,0.2)', fill: true }
+                        ]},
+                        options: { responsive: true, maintainAspectRatio: false }
+                    });
+                }
+            }
+
+            function renderBancos() {
+                const data = filterTransactions(allTransactions, state.filters.bancos);
+                const bancos = groupByBanco(data);
+                const debitosPorBanco = groupByBanco(data.filter(t => t.tipo === 'debito'), 'debito');
+                const creditosPorBanco = groupByBanco(data.filter(t => t.tipo === 'credito'), 'credito');
+                const totalDeb = debitosPorBanco.reduce((s, b) => s + b.total, 0);
+                const totalCred = creditosPorBanco.reduce((s, b) => s + b.total, 0);
+                const saldo = totalCred - totalDeb;
+                $('#bancosCards').innerHTML = `
+                    ${renderCard('red', 'Total Débitos', formatCurrency(totalDeb), '', 'red')}
+                    ${renderCard('green', 'Total Créditos', formatCurrency(totalCred), '', 'green')}
+                    ${renderCard(saldo >= 0 ? 'green' : 'red', 'Saldo', formatCurrency(saldo), '', saldo >= 0 ? 'green' : 'red')}
+                `;
+                const anos = getYears(allTransactions);
+                $('#bancosFilters').innerHTML = `
+                    <div class="filter-group"><label>Ano</label><select data-filter="ano" data-placeholder="Todos"><option value="">Todos</option>${anos.map(a => `<option value="${a}">${a}</option>`).join('')}</select></div>
+                    <div class="filter-group"><label>Mês</label><select data-filter="mes" data-placeholder="Todos"><option value="">Todos</option>${Array.from({length:12}, (_,i) => `<option value="${i}">${getMonthLabel(i)}</option>`).join('')}</select></div>
+                `;
+                $('#bancosCharts').innerHTML = '<div class="chart-card"><div class="chart-title">Distribuição por Banco</div><canvas id="bancos-pie"></canvas></div>';
+                if (window.Chart) {
+                    createOrUpdateChart('bancos-pie', {
+                        type: 'pie', ctx: $('#bancos-pie'),
+                        data: { labels: bancos.map(b => b.banco), datasets: [{ data: bancos.map(b => b.total), backgroundColor: ['#6366f1','#8b5cf6','#7c3aed','#a78bfa','#c4b5fd'] }] },
+                        options: { responsive: true, maintainAspectRatio: false }
+                    });
+                }
+            }
+
+            function renderPessoas() {
+                const data = filterTransactions(allTransactions, state.filters.pessoas);
+                const pessoas = groupByPessoa(data);
+                const totalDeb = pessoas.reduce((s, p) => s + p.total, 0);
+                $('#pessoasCards').innerHTML = `
+                    ${renderCard('purple', 'Total Movimentado', formatCurrency(totalDeb), '', 'purple')}
+                    ${renderCard('purple', 'Pessoas Envolvidas', pessoas.length, '', 'purple')}
+                `;
+                const anos = getYears(allTransactions);
+                $('#pessoasFilters').innerHTML = `
+                    <div class="filter-group"><label>Ano</label><select data-filter="ano" data-placeholder="Todos"><option value="">Todos</option>${anos.map(a => `<option value="${a}">${a}</option>`).join('')}</select></div>
+                    <div class="filter-group"><label>Mês</label><select data-filter="mes" data-placeholder="Todos"><option value="">Todos</option>${Array.from({length:12}, (_,i) => `<option value="${i}">${getMonthLabel(i)}</option>`).join('')}</select></div>
+                `;
+                $('#pessoasCharts').innerHTML = '<div class="chart-card"><div class="chart-title">Total por Pessoa</div><canvas id="pessoas-bar"></canvas></div>';
+                if (window.Chart) {
+                    createOrUpdateChart('pessoas-bar', {
+                        type: 'bar', ctx: $('#pessoas-bar'),
+                        data: { labels: pessoas.map(p => p.pessoa), datasets: [{ label: 'Total', data: pessoas.map(p => p.total), backgroundColor: '#8b5cf6' }] },
+                        options: { responsive: true, maintainAspectRatio: false }
+                    });
+                }
+            }
+
+            function renderFormas() {
+                const data = filterTransactions(allTransactions, state.filters.formas);
+                const formas = groupByForma(data);
+                const total = formas.reduce((s, f) => s + f.total, 0);
+                $('#formasCards').innerHTML = `
+                    ${renderCard('purple', 'Total Movimentado', formatCurrency(total), '', 'purple')}
+                    ${renderCard('purple', 'Formas de Pagamento', formas.length, '', 'purple')}
+                `;
+                const anos = getYears(allTransactions);
+                $('#formasFilters').innerHTML = `
+                    <div class="filter-group"><label>Ano</label><select data-filter="ano" data-placeholder="Todos"><option value="">Todos</option>${anos.map(a => `<option value="${a}">${a}</option>`).join('')}</select></div>
+                    <div class="filter-group"><label>Mês</label><select data-filter="mes" data-placeholder="Todos"><option value="">Todos</option>${Array.from({length:12}, (_,i) => `<option value="${i}">${getMonthLabel(i)}</option>`).join('')}</select></div>
+                `;
+                $('#formasCharts').innerHTML = '<div class="chart-card"><div class="chart-title">Distribuição por Forma de Pagamento</div><canvas id="formas-pie"></canvas></div>';
+                if (window.Chart) {
+                    createOrUpdateChart('formas-pie', {
+                        type: 'pie', ctx: $('#formas-pie'),
+                        data: { labels: formas.map(f => f.forma), datasets: [{ data: formas.map(f => f.total), backgroundColor: ['#6366f1','#8b5cf6','#7c3aed','#a78bfa','#c4b5fd','#ddd6fe'] }] },
+                        options: { responsive: true, maintainAspectRatio: false }
+                    });
+                }
+            }
+
+            function renderInadimplencia() {
+                const data = getFilteredData('inadimplencia');
+                const inad = data.filter(t => t.status === 'Pendente' && t.daysLate > 0);
+                const totalInad = inad.reduce((s, t) => s + t.valorAbs, 0);
+                const totalPend = data.filter(t => t.status === 'Pendente').reduce((s, t) => s + t.valorAbs, 0);
+                const taxa = totalPend > 0 ? (totalInad / totalPend) * 100 : 0;
+                $('#inadimplenciaCards').innerHTML = `
+                    ${renderCard('red', 'Valor Inadimplente', formatCurrency(totalInad), '', 'red')}
+                    ${renderCard('yellow', 'Pendentes', formatCurrency(totalPend), '', 'yellow')}
+                    ${renderCard('red', 'Taxa de Inadimplência', taxa.toFixed(2) + '%', '', 'red')}
+                    ${renderCard('purple', 'Registros Inadimplentes', inad.length, '', 'purple')}
+                `;
+                const anos = getYears(allTransactions);
+                $('#inadimplenciaFilters').innerHTML = `
+                    <div class="filter-group"><label>Tipo</label><select data-filter="tipo" data-placeholder="Todos"><option value="todos">Todos</option><option value="debito">Débitos</option><option value="credito">Créditos</option></select></div>
+                    <div class="filter-group"><label>Ano</label><select data-filter="ano" data-placeholder="Todos"><option value="">Todos</option>${anos.map(a => `<option value="${a}">${a}</option>`).join('')}</select></div>
+                    <div class="filter-group"><label>Mês</label><select data-filter="mes" data-placeholder="Todos"><option value="">Todos</option>${Array.from({length:12}, (_,i) => `<option value="${i}">${getMonthLabel(i)}</option>`).join('')}</select></div>
+                `;
+                renderTable('inadimplenciaTable', inad, [
+                    { key: 'data', label: 'Data', render: t => formatDateBR(t.dateObj) },
+                    { key: 'descricao', label: 'Descrição' },
+                    { key: 'categoria', label: 'Categoria' },
+                    { key: 'pessoa', label: 'Pessoa' },
+                    { key: 'diasAtraso', label: 'Dias Atraso', value: t => t.daysLate, render: t => `${t.daysLate} dias` },
+                    { key: 'valorAbs', label: 'Valor', render: t => `<strong>${formatCurrency(t.valorAbs)}</strong>` }
+                ]);
+            }
+
+            function renderCalendario() {
+                const data = allTransactions;
+                const totalDeb = sumByType(data, 'debito');
+                const totalCred = sumByType(data, 'credito');
+                $('#calendarioCards').innerHTML = `
+                    ${renderCard('red', 'Débitos', formatCurrency(totalDeb), '', 'red')}
+                    ${renderCard('green', 'Créditos', formatCurrency(totalCred), '', 'green')}
+                    ${renderCard('purple', 'Registros', data.length, '', 'purple')}
+                `;
+                renderCalendar('calendarioGeral', data, 'todos', state.calendarMonth);
+                // Tabela do dia selecionado
+                const sel = state.calendarSelectedDate;
+                if (sel) {
+                    const dayData = getTransactionsForDay(allTransactions, sel.year, sel.month, sel.day);
+                    renderTable('calendarioTable', dayData, [
+                        { key: 'data', label: 'Data', render: t => formatDateBR(t.dateObj) },
+                        { key: 'descricao', label: 'Descrição' },
+                        { key: 'tipo', label: 'Tipo', render: t => t.tipo === 'debito' ? 'Débito' : 'Crédito' },
+                        { key: 'valorAbs', label: 'Valor', render: t => `<strong>${formatCurrency(t.valorAbs)}</strong>` }
+                    ]);
+                } else {
+                    $('#calendarioTable').innerHTML = '<div class="empty-state"><div class="icon">📅</div>Selecione um dia no calendário para ver as transações.</div>';
+                }
+            }
+
+            function renderCalendar(containerId, data, tipo, monthObj) {
+                const container = $('#' + containerId);
+                if (!container) return;
+                const { year, month } = monthObj;
+                const firstDay = new Date(year, month, 1).getDay();
+                const daysInMonth = new Date(year, month + 1, 0).getDate();
+                const today = new Date();
+                const isToday = (d) => d.getFullYear() === today.getFullYear() && d.getMonth() === today.getMonth() && d.getDate() === today.getDate();
+                const isSelected = (d) => state.calendarSelectedDate && state.calendarSelectedDate.year === year && state.calendarSelectedDate.month === month && state.calendarSelectedDate.day === d;
+                let html = `
+                    <div class="calendar-header">
+                        <div class="calendar-nav">
+                            <button data-action="prevMonth">←</button>
+                            <span class="calendar-title">${getMonthLabel(month)} ${year}</span>
+                            <button data-action="nextMonth">→</button>
+                        </div>
+                        <div class="calendar-nav">
+                            <button data-action="today">Hoje</button>
+                        </div>
+                    </div>
+                    <div class="calendar-grid">
+                `;
+                const dayHeaders = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
+                dayHeaders.forEach(d => html += `<div class="calendar-day-header">${d}</div>`);
+                for (let i = 0; i < firstDay; i++) html += `<div class="calendar-day other-month"></div>`;
+                for (let d = 1; d <= daysInMonth; d++) {
+                    const dateObj = new Date(year, month, d);
+                    const dayData = getTransactionsForDay(data, year, month, d);
+                    const totalDeb = dayData.filter(t => t.tipo === 'debito').reduce((s, t) => s + t.valorAbs, 0);
+                    const totalCred = dayData.filter(t => t.tipo === 'credito').reduce((s, t) => s + t.valorAbs, 0);
+                    const classes = ['calendar-day'];
+                    if (isToday(dateObj)) classes.push('today');
+                    if (isSelected(d)) classes.push('selected');
+                    html += `<div class="${classes.join(' ')}" data-day="${d}">
+                        <div class="day-number">${d}</div>
+                        ${totalDeb > 0 ? `<div class="day-indicator debit">-${formatCurrencyCompact(totalDeb)}</div>` : ''}
+                        ${totalCred > 0 ? `<div class="day-indicator credit">+${formatCurrencyCompact(totalCred)}</div>` : ''}
+                    </div>`;
+                }
+                html += '</div>';
+                container.innerHTML = html;
+                // Eventos do calendário
+                $$('button[data-action]', container).forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        if (btn.dataset.action === 'prevMonth') {
+                            monthObj.month--;
+                            if (monthObj.month < 0) { monthObj.month = 11; monthObj.year--; }
+                        } else if (btn.dataset.action === 'nextMonth') {
+                            monthObj.month++;
+                            if (monthObj.month > 11) { monthObj.month = 0; monthObj.year++; }
+                        } else if (btn.dataset.action === 'today') {
+                            monthObj.year = today.getFullYear();
+                            monthObj.month = today.getMonth();
+                        }
+                        renderCurrentPage();
+                    });
+                });
+                $$('.calendar-day[data-day]', container).forEach(day => {
+                    day.addEventListener('click', () => {
+                        const d = parseInt(day.dataset.day);
+                        if (containerId === 'calendarioGeral') {
+                            state.calendarSelectedDate = { year, month, day: d };
+                        }
+                        renderCurrentPage();
+                    });
+                });
+            }
+
+            function renderComparativo() {
+                const f = state.filters.comparativo;
+                const data = filterTransactions(allTransactions, f);
+                const anos = getYears(allTransactions);
+                const anoAtual = f.ano ? parseInt(f.ano) : new Date().getFullYear();
+                const anosDisponiveis = anos.filter(a => a >= anoAtual - 3 && a <= anoAtual).sort((a,b) => a-b);
+                const comparativo = anosDisponiveis.map(ano => {
+                    const deb = data.filter(t => t.ano === ano && t.tipo === 'debito').reduce((s, t) => s + t.valorAbs, 0);
+                    const cred = data.filter(t => t.ano === ano && t.tipo === 'credito').reduce((s, t) => s + t.valorAbs, 0);
+                    return { ano, deb, cred, saldo: cred - deb };
+                });
+                const totalDeb = comparativo.reduce((s, c) => s + c.deb, 0);
+                const totalCred = comparativo.reduce((s, c) => s + c.cred, 0);
+                const saldo = totalCred - totalDeb;
+                $('#comparativoCards').innerHTML = `
+                    ${renderCard('red', 'Total Débitos', formatCurrency(totalDeb), '', 'red')}
+                    ${renderCard('green', 'Total Créditos', formatCurrency(totalCred), '', 'green')}
+                    ${renderCard(saldo >= 0 ? 'green' : 'red', 'Saldo', formatCurrency(saldo), '', saldo >= 0 ? 'green' : 'red')}
+                `;
+                $('#comparativoFilters').innerHTML = `
+                    <div class="filter-group"><label>Ano Referência</label><select data-filter="ano" data-placeholder="Todos"><option value="">Todos</option>${anos.map(a => `<option value="${a}">${a}</option>`).join('')}</select></div>
+                `;
+                let html = '<table><thead><tr><th>Ano</th><th>Débitos</th><th>Créditos</th><th>Saldo</th></tr></thead><tbody>';
+                comparativo.forEach(c => {
+                    html += `<tr><td>${c.ano}</td><td>${formatCurrency(c.deb)}</td><td>${formatCurrency(c.cred)}</td><td class="${c.saldo >= 0 ? 'green' : 'red'}">${formatCurrency(c.saldo)}</td></tr>`;
+                });
+                html += '</tbody></table>';
+                $('#comparativoTable').innerHTML = html;
+            }
+
+            function renderAnalise() {
+                const f = state.filters.analise;
+                const data = filterTransactions(allTransactions, f);
+                const anos = getYears(allTransactions);
+                const mesAtual = new Date().getMonth();
+                const anoAtual = new Date().getFullYear();
+                const anoRef = f.ano ? parseInt(f.ano) : anoAtual;
+                const mesRef = f.mes ? parseInt(f.mes) : mesAtual;
+                const dadosMes = data.filter(t => t.ano === anoRef && t.mes === mesRef);
+                const totalDebMes = sumByType(dadosMes, 'debito');
+                const totalCredMes = sumByType(dadosMes, 'credito');
+                const saldoMes = totalCredMes - totalDebMes;
+                const dadosAno = data.filter(t => t.ano === anoRef);
+                const totalDebAno = sumByType(dadosAno, 'debito');
+                const totalCredAno = sumByType(dadosAno, 'credito');
+                const saldoAno = totalCredAno - totalDebAno;
+                $('#analiseCards').innerHTML = `
+                    ${renderCard('red', 'Débitos Mês', formatCurrency(totalDebMes), '', 'red')}
+                    ${renderCard('green', 'Créditos Mês', formatCurrency(totalCredMes), '', 'green')}
+                    ${renderCard(saldoMes >= 0 ? 'green' : 'red', 'Saldo Mês', formatCurrency(saldoMes), '', saldoMes >= 0 ? 'green' : 'red')}
+                    ${renderCard(saldoAno >= 0 ? 'green' : 'red', 'Saldo Ano', formatCurrency(saldoAno), '', saldoAno >= 0 ? 'green' : 'red')}
+                `;
+                $('#analiseFilters').innerHTML = `
+                    <div class="filter-group"><label>Ano</label><select data-filter="ano" data-placeholder="Todos"><option value="">Todos</option>${anos.map(a => `<option value="${a}">${a}</option>`).join('')}</select></div>
+                    <div class="filter-group"><label>Mês</label><select data-filter="mes" data-placeholder="Todos"><option value="">Todos</option>${Array.from({length:12}, (_,i) => `<option value="${i}">${getMonthLabel(i)}</option>`).join('')}</select></div>
+                `;
+                // Gráfico comparativo de categorias no mês
+                const catDeb = groupByCategory(dadosMes.filter(t => t.tipo === 'debito'), 'debito');
+                const catCred = groupByCategory(dadosMes.filter(t => t.tipo === 'credito'), 'credito');
+                $('#analiseCharts').innerHTML = `
+                    <div class="chart-card"><div class="chart-title">Categorias de Débito no Mês</div><canvas id="analise-pie-deb"></canvas></div>
+                    <div class="chart-card"><div class="chart-title">Categorias de Crédito no Mês</div><canvas id="analise-pie-cred"></canvas></div>
+                `;
+                if (window.Chart) {
+                    createOrUpdateChart('analise-pie-deb', {
+                        type: 'pie', ctx: $('#analise-pie-deb'),
+                        data: { labels: catDeb.map(c => c.categoria), datasets: [{ data: catDeb.map(c => c.total), backgroundColor: ['#ef4444','#f97316','#f59e0b','#dc2626','#b91c1c'] }] },
+                        options: { responsive: true, maintainAspectRatio: false }
+                    });
+                    createOrUpdateChart('analise-pie-cred', {
+                        type: 'pie', ctx: $('#analise-pie-cred'),
+                        data: { labels: catCred.map(c => c.categoria), datasets: [{ data: catCred.map(c => c.total), backgroundColor: ['#10b981','#34d399','#059669','#6ee7b7','#a7f3d0'] }] },
+                        options: { responsive: true, maintainAspectRatio: false }
+                    });
+                }
+                renderTable('analiseTable', dadosMes, [
+                    { key: 'data', label: 'Data', render: t => formatDateBR(t.dateObj) },
+                    { key: 'descricao', label: 'Descrição' },
+                    { key: 'categoria', label: 'Categoria' },
+                    { key: 'tipo', label: 'Tipo', render: t => t.tipo === 'debito' ? 'Débito' : 'Crédito' },
+                    { key: 'valorAbs', label: 'Valor', render: t => `<strong>${formatCurrency(t.valorAbs)}</strong>` }
+                ]);
+            }
+
+            // ===================== TOASTS =====================
+            function showToast(message, type = 'info') {
+                const container = $('#toastContainer');
+                const icons = { success: '✅', error: '❌', info: 'ℹ️' };
+                const toast = document.createElement('div');
+                toast.className = `toast ${type}`;
+                toast.innerHTML = `<span class="toast-icon">${icons[type] || 'ℹ️'}</span> ${message}`;
+                container.appendChild(toast);
+                setTimeout(() => {
+                    toast.classList.add('removing');
+                    setTimeout(() => toast.remove(), 300);
+                }, 3000);
+            }
+
+            // ===================== INICIALIZAÇÃO E EVENTOS =====================
+            function init() {
+                // Tema
+                if (state.theme === 'dark') document.documentElement.setAttribute('data-theme', 'dark');
+                // Sidebar colapsada no desktop
+                if (state.sidebarCollapsed && window.innerWidth > 768) {
+                    $('#sidebar').classList.add('collapsed');
+                    $('#mainWrapper').classList.add('sidebar-collapsed');
+                }
+                // Navegação
+                $$('.nav-item').forEach(item => {
+                    item.addEventListener('click', () => {
+                        state.currentPage = item.dataset.page;
+                        renderCurrentPage();
+                        if (window.innerWidth <= 768) closeMobileSidebar();
+                    });
+                });
+                // Hamburger
+                $('#hamburgerBtn').addEventListener('click', () => {
+                    if (window.innerWidth <= 768) {
+                        $('#sidebar').classList.toggle('mobile-open');
+                        $('#sidebarOverlay').classList.toggle('visible');
+                    } else {
+                        const collapsed = $('#sidebar').classList.toggle('collapsed');
+                        $('#mainWrapper').classList.toggle('sidebar-collapsed', collapsed);
+                        state.sidebarCollapsed = collapsed;
+                        localStorage.setItem('dash_sidebar', collapsed ? 'collapsed' : 'expanded');
+                    }
+                });
+                $('#sidebarOverlay').addEventListener('click', closeMobileSidebar);
+                // Dark mode
+                $('#btnDarkMode').addEventListener('click', toggleTheme);
+                // Atualizar
+                $('#btnAtualizar').addEventListener('click', () => loadData(true));
+                // Imprimir
+                $('#btnImprimir').addEventListener('click', () => window.print());
+                // Relógio
+                updateClock();
+                setInterval(updateClock, 1000);
+                // Atalhos de teclado
+                document.addEventListener('keydown', (e) => {
+                    if (e.key.toLowerCase() === 'r') loadData(true);
+                    if (e.key.toLowerCase() === 'd') toggleTheme();
+                    if (e.key.toLowerCase() === 'p') window.print();
+                });
+                // Delegation para filtros (select e input)
+                document.addEventListener('change', (e) => {
+                    const target = e.target;
+                    if (target.matches('[data-filter]')) {
+                        const page = state.currentPage;
+                        const filterKey = target.dataset.filter;
+                        const value = target.value;
+                        if (!state.filters[page]) state.filters[page] = {};
+                        state.filters[page][filterKey] = value;
+                        renderCurrentPage();
+                    }
+                });
+                // Carregar dados
+                loadData(true);
+            }
+
+            function toggleTheme() {
+                state.theme = state.theme === 'dark' ? 'light' : 'dark';
+                document.documentElement.setAttribute('data-theme', state.theme);
+                localStorage.setItem('dash_theme', state.theme);
+                // Recarrega os gráficos para atualizar cores se necessário
+                renderCurrentPage();
+            }
+
+            function updateClock() {
+                const now = new Date();
+                $('#clock').textContent = now.toLocaleTimeString('pt-BR');
+            }
+
+            function closeMobileSidebar() {
+                $('#sidebar').classList.remove('mobile-open');
+                $('#sidebarOverlay').classList.remove('visible');
+            }
+
+            // Iniciar quando o DOM estiver pronto
+            document.addEventListener('DOMContentLoaded', init);
+            // Caso o DOM já esteja carregado, chama init imediatamente
+            if (document.readyState === 'complete' || document.readyState === 'interactive') {
+                init();
+            }
         })();
     </script>
 </body>
