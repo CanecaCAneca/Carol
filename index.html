@@ -3,1624 +3,635 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Financeiro Glass</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+    <title>Ordem de Serviço - Automatizada</title>
+    <!-- Bibliotecas para PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
-        /* ========== ESTILOS (mantidos do original, sem alterações) ========== */
-        :root {
-            --accent: #6366f1;
-            --accent2: #8b5cf6;
-            --accent3: #7c3aed;
-            --green: #10b981;
-            --green-dark: #059669;
-            --red: #ef4444;
-            --red-dark: #dc2626;
-            --yellow: #f59e0b;
-            --orange: #f97316;
-            --bg-start: #eef2ff;
-            --bg-end: #faf5ff;
-            --card-bg: rgba(255, 255, 255, 0.72);
-            --card-border: rgba(255, 255, 255, 0.35);
-            --text: #1e1b4b;
-            --text-secondary: #4b5563;
-            --text-muted: #9ca3af;
-            --shadow: 0 8px 32px rgba(99, 102, 241, 0.12);
-            --shadow-hover: 0 12px 40px rgba(99, 102, 241, 0.22);
-            --sidebar-bg: rgba(255, 255, 255, 0.65);
-            --sidebar-border: rgba(255, 255, 255, 0.3);
-            --input-bg: rgba(255, 255, 255, 0.85);
-            --input-border: rgba(99, 102, 241, 0.2);
-            --table-header-bg: rgba(99, 102, 241, 0.08);
-            --table-row-hover: rgba(99, 102, 241, 0.05);
-            --badge-green-bg: rgba(16, 185, 129, 0.15);
-            --badge-green-text: #059669;
-            --badge-red-bg: rgba(239, 68, 68, 0.15);
-            --badge-red-text: #dc2626;
-            --badge-yellow-bg: rgba(245, 158, 11, 0.15);
-            --badge-yellow-text: #d97706;
-            --badge-purple-bg: rgba(139, 92, 246, 0.15);
-            --badge-purple-text: #7c3aed;
-            --calendar-today: #6366f1;
-            --calendar-selected: rgba(99, 102, 241, 0.2);
-            --overlay-bg: rgba(30, 27, 75, 0.45);
-            --toast-success: #10b981;
-            --toast-error: #ef4444;
-            --toast-info: #6366f1;
-            --radius: 20px;
-            --radius-sm: 12px;
-            --radius-xs: 8px;
-            --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            --sidebar-width: 260px;
-            --sidebar-width-mini: 72px;
-            --header-height: 64px;
-        }
-
-        [data-theme="dark"] {
-            --bg-start: #0f0f1a;
-            --bg-end: #1a1025;
-            --card-bg: rgba(30, 27, 75, 0.75);
-            --card-border: rgba(139, 92, 246, 0.2);
-            --text: #e2e8f0;
-            --text-secondary: #cbd5e1;
-            --text-muted: #64748b;
-            --shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
-            --shadow-hover: 0 12px 40px rgba(0, 0, 0, 0.5);
-            --sidebar-bg: rgba(20, 20, 35, 0.8);
-            --sidebar-border: rgba(139, 92, 246, 0.15);
-            --input-bg: rgba(30, 27, 75, 0.7);
-            --input-border: rgba(139, 92, 246, 0.25);
-            --table-header-bg: rgba(139, 92, 246, 0.12);
-            --table-row-hover: rgba(139, 92, 246, 0.08);
-            --badge-green-bg: rgba(16, 185, 129, 0.2);
-            --badge-green-text: #34d399;
-            --badge-red-bg: rgba(239, 68, 68, 0.2);
-            --badge-red-text: #f87171;
-            --badge-yellow-bg: rgba(245, 158, 11, 0.2);
-            --badge-yellow-text: #fbbf24;
-            --badge-purple-bg: rgba(139, 92, 246, 0.2);
-            --badge-purple-text: #a78bfa;
-            --calendar-today: #8b5cf6;
-            --calendar-selected: rgba(139, 92, 246, 0.3);
-            --overlay-bg: rgba(0, 0, 0, 0.6);
-        }
-
-        * { margin:0; padding:0; box-sizing:border-box; }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
-            font-family:'Segoe UI', 'Inter', system-ui, -apple-system, sans-serif;
-            background:linear-gradient(135deg, var(--bg-start), var(--bg-end));
-            background-attachment:fixed;
-            color:var(--text);
-            min-height:100vh;
-            display:flex;
-            transition:background 0.5s, color 0.5s;
-            overflow-x:hidden;
+            font-family: 'Segoe UI', Tahoma, sans-serif;
+            background: #f0f2f5;
+            padding: 20px;
+            color: #333;
         }
-
-        /* Sidebar */
-        .sidebar {
-            position:fixed; top:0; left:0; width:var(--sidebar-width); height:100vh;
-            background:var(--sidebar-bg); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px);
-            border-right:1px solid var(--sidebar-border); z-index:1000; display:flex; flex-direction:column;
-            transition:width var(--transition), transform var(--transition); overflow:hidden; flex-shrink:0;
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
         }
-        .sidebar.collapsed { width:var(--sidebar-width-mini); }
-        .sidebar-header { padding:16px; display:flex; align-items:center; gap:12px; border-bottom:1px solid var(--sidebar-border); min-height:var(--header-height); }
-        .sidebar-logo { width:40px; height:40px; border-radius:12px; background:linear-gradient(135deg, var(--accent), var(--accent2)); display:flex; align-items:center; justify-content:center; font-size:20px; flex-shrink:0; color:#fff; font-weight:700; }
-        .sidebar-title { font-size:1.05rem; font-weight:700; letter-spacing:-0.5px; white-space:nowrap; overflow:hidden; transition:opacity 0.2s; }
-        .sidebar.collapsed .sidebar-title { opacity:0; width:0; }
-        .sidebar-nav { flex:1; overflow-y:auto; padding:12px 8px; display:flex; flex-direction:column; gap:2px; }
-        .sidebar-nav::-webkit-scrollbar { width:4px; }
-        .sidebar-nav::-webkit-scrollbar-thumb { background:var(--accent); border-radius:4px; }
-        .nav-item {
-            display:flex; align-items:center; gap:12px; padding:11px 14px; border-radius:var(--radius-sm);
-            cursor:pointer; transition:background 0.2s, color 0.2s; color:var(--text-secondary);
-            text-decoration:none; font-size:0.9rem; font-weight:500; white-space:nowrap; user-select:none;
-            border:none; background:none; width:100%; text-align:left; position:relative;
+        h1 {
+            text-align: center;
+            font-size: 28px;
+            margin-bottom: 10px;
+            color: #1a3c5e;
         }
-        .nav-item:hover { background:rgba(99,102,241,0.1); color:var(--accent); }
-        .nav-item.active { background:linear-gradient(135deg, var(--accent), var(--accent2)); color:#fff; box-shadow:0 4px 16px rgba(99,102,241,0.35); }
-        .nav-item .icon { font-size:1.2rem; flex-shrink:0; width:24px; text-align:center; }
-        .nav-item .label { overflow:hidden; text-overflow:ellipsis; }
-        .sidebar.collapsed .nav-item .label { opacity:0; width:0; display:none; }
-        .sidebar.collapsed .nav-item { justify-content:center; padding:12px; }
-        .sidebar.collapsed .nav-item .icon { margin:0; }
-        .sidebar-footer { padding:12px 16px; border-top:1px solid var(--sidebar-border); font-size:0.75rem; color:var(--text-muted); text-align:center; white-space:nowrap; overflow:hidden; }
-        .sidebar.collapsed .sidebar-footer { font-size:0; }
-
-        /* Main wrapper */
-        .main-wrapper { margin-left:var(--sidebar-width); flex:1; min-height:100vh; transition:margin-left var(--transition); display:flex; flex-direction:column; }
-        .main-wrapper.sidebar-collapsed { margin-left:var(--sidebar-width-mini); }
-
-        /* Header */
-        .header {
-            position:sticky; top:0; z-index:900; min-height:var(--header-height);
-            background:var(--card-bg); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px);
-            border-bottom:1px solid var(--card-border); display:flex; align-items:center; padding:0 20px; gap:12px;
-            flex-wrap:wrap; box-shadow:0 2px 12px rgba(0,0,0,0.06); transition:background 0.3s;
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
         }
-        .hamburger { display:none; background:none; border:none; font-size:1.5rem; cursor:pointer; color:var(--text); padding:4px; border-radius:8px; transition:background 0.2s; }
-        .hamburger:hover { background:rgba(99,102,241,0.1); }
-        .header-title { font-size:1.15rem; font-weight:700; letter-spacing:-0.3px; flex:1; min-width:120px; }
-        .clock { font-size:0.9rem; font-weight:600; color:var(--accent); font-variant-numeric:tabular-nums; letter-spacing:0.5px; white-space:nowrap; }
-        .header-actions { display:flex; gap:6px; flex-wrap:wrap; align-items:center; }
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px 30px;
+            margin-bottom: 25px;
+            background: #f9fafb;
+            padding: 20px;
+            border-radius: 8px;
+        }
+        .form-grid .full {
+            grid-column: 1 / -1;
+        }
+        label {
+            font-weight: 600;
+            display: block;
+            margin-bottom: 4px;
+            font-size: 14px;
+        }
+        input, select, textarea {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: 0.2s;
+        }
+        input:focus, select:focus, textarea:focus {
+            border-color: #1a3c5e;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(26,60,94,0.2);
+        }
+        textarea {
+            resize: vertical;
+            min-height: 60px;
+        }
         .btn {
-            display:inline-flex; align-items:center; gap:6px; padding:9px 16px; border-radius:var(--radius-sm);
-            border:1px solid var(--input-border); background:var(--input-bg); color:var(--text);
-            font-size:0.85rem; font-weight:600; cursor:pointer; transition:all 0.2s; white-space:nowrap;
-            text-decoration:none; backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px);
+            background: #1a3c5e;
+            color: #fff;
+            border: none;
+            padding: 10px 24px;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 16px;
+            transition: 0.2s;
         }
-        .btn:hover { background:var(--accent); color:#fff; border-color:var(--accent); box-shadow:0 4px 16px rgba(99,102,241,0.3); transform:translateY(-1px); }
-        .btn:active { transform:translateY(0); }
-        .btn-accent { background:linear-gradient(135deg, var(--accent), var(--accent2)); color:#fff; border:none; box-shadow:0 4px 16px rgba(99,102,241,0.3); }
-
-        /* Content */
-        .content { flex:1; padding:20px; max-width:1600px; width:100%; margin:0 auto; }
-        .page-section { display:none; animation:fadeIn 0.35s ease; }
-        .page-section.active { display:block; }
-        @keyframes fadeIn { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:translateY(0); } }
-
-        /* Cards */
-        .cards-row { display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); gap:16px; margin-bottom:20px; }
-        .card {
-            background:var(--card-bg); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px);
-            border:1px solid var(--card-border); border-radius:var(--radius); box-shadow:var(--shadow);
-            padding:20px; transition:box-shadow 0.3s, transform 0.3s; position:relative; overflow:hidden;
+        .btn:hover {
+            background: #0f2a44;
         }
-        .card:hover { box-shadow:var(--shadow-hover); transform:translateY(-3px); }
-        .card-icon { width:44px; height:44px; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:1.3rem; margin-bottom:12px; flex-shrink:0; }
-        .card-icon.green { background:var(--badge-green-bg); color:var(--badge-green-text); }
-        .card-icon.red { background:var(--badge-red-bg); color:var(--badge-red-text); }
-        .card-icon.purple { background:var(--badge-purple-bg); color:var(--badge-purple-text); }
-        .card-icon.yellow { background:var(--badge-yellow-bg); color:var(--badge-yellow-text); }
-        .card-label { font-size:0.8rem; font-weight:600; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.5px; margin-bottom:4px; }
-        .card-value { font-size:1.7rem; font-weight:800; letter-spacing:-1px; line-height:1.2; }
-        .card-value.green { color:var(--green); }
-        .card-value.red { color:var(--red); }
-        .card-value.purple { color:var(--accent); }
-        .card-value.yellow { color:var(--yellow); }
-        .card-sub { font-size:0.8rem; color:var(--text-muted); margin-top:4px; }
-
-        /* Filters */
-        .filters-bar {
-            display:flex; flex-wrap:wrap; gap:10px; margin-bottom:16px; background:var(--card-bg);
-            backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px); border:1px solid var(--card-border);
-            border-radius:var(--radius-sm); padding:14px 16px; box-shadow:var(--shadow); align-items:flex-end;
+        .btn-pdf {
+            background: #d9534f;
+            margin-left: 10px;
         }
-        .filter-group { display:flex; flex-direction:column; gap:4px; min-width:120px; flex:1 1 140px; }
-        .filter-group label { font-size:0.72rem; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.4px; }
-        .filter-group select, .filter-group input {
-            padding:9px 12px; border-radius:var(--radius-xs); border:1px solid var(--input-border);
-            background:var(--input-bg); color:var(--text); font-size:0.85rem; font-weight:500; outline:none;
-            transition:border-color 0.2s, box-shadow 0.2s; backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px);
-            width:100%; cursor:pointer;
+        .btn-pdf:hover {
+            background: #c9302c;
         }
-        .filter-group select:focus, .filter-group input:focus { border-color:var(--accent); box-shadow:0 0 0 3px rgba(99,102,241,0.15); }
-        .filter-group select option { background:var(--card-bg); color:var(--text); }
-
-        /* Tables */
-        .table-container {
-            background:var(--card-bg); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px);
-            border:1px solid var(--card-border); border-radius:var(--radius); box-shadow:var(--shadow);
-            overflow:hidden; margin-bottom:20px;
+        .actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 10px;
         }
-        .table-scroll { overflow-x:auto; max-height:420px; overflow-y:auto; }
-        .table-scroll::-webkit-scrollbar { width:6px; height:6px; }
-        .table-scroll::-webkit-scrollbar-thumb { background:var(--accent); border-radius:4px; }
-        table { width:100%; border-collapse:collapse; font-size:0.85rem; min-width:600px; }
-        table th {
-            padding:12px 14px; text-align:left; font-weight:700; font-size:0.75rem; text-transform:uppercase;
-            letter-spacing:0.4px; color:var(--text-muted); background:var(--table-header-bg); cursor:pointer;
-            user-select:none; white-space:nowrap; position:sticky; top:0; z-index:5; border-bottom:1px solid var(--card-border);
+        /* ESTILO DA OS (visualização) */
+        #os-preview {
+            margin-top: 30px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            background: #fff;
+            font-size: 13px;
+            line-height: 1.5;
         }
-        table th:hover { background:rgba(99,102,241,0.12); }
-        table th .sort-arrow { font-size:0.65rem; margin-left:4px; opacity:0.7; }
-        table td { padding:10px 14px; border-bottom:1px solid rgba(128,128,128,0.1); color:var(--text-secondary); white-space:nowrap; }
-        table tbody tr { transition:background 0.15s; }
-        table tbody tr:hover { background:var(--table-row-hover); }
-        table tbody tr.debit-row { border-left:4px solid var(--red); }
-        table tbody tr.credit-row { border-left:4px solid var(--green); }
-        .badge {
-            padding:4px 10px; border-radius:20px; font-size:0.72rem; font-weight:700; letter-spacing:0.3px;
-            text-transform:uppercase; display:inline-block;
+        #os-preview table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 8px 0;
+            font-size: 12px;
         }
-        .badge-green { background:var(--badge-green-bg); color:var(--badge-green-text); }
-        .badge-red { background:var(--badge-red-bg); color:var(--badge-red-text); }
-        .badge-yellow { background:var(--badge-yellow-bg); color:var(--badge-yellow-text); }
-        .badge-purple { background:var(--badge-purple-bg); color:var(--badge-purple-text); }
-        .badge-orange { background:var(--badge-yellow-bg); color:var(--orange); }
-
-        /* Charts */
-        .charts-grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(380px, 1fr)); gap:16px; margin-bottom:20px; }
-        .chart-card {
-            background:var(--card-bg); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px);
-            border:1px solid var(--card-border); border-radius:var(--radius); box-shadow:var(--shadow);
-            padding:20px; position:relative;
+        #os-preview td, #os-preview th {
+            border: 1px solid #222;
+            padding: 4px 8px;
+            vertical-align: top;
         }
-        .chart-card canvas { max-height:300px; width:100% !important; }
-        .chart-title { font-size:0.9rem; font-weight:700; margin-bottom:12px; color:var(--text); }
-
-        /* Calendar */
-        .calendar-container {
-            background:var(--card-bg); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px);
-            border:1px solid var(--card-border); border-radius:var(--radius); box-shadow:var(--shadow);
-            padding:20px; margin-bottom:20px;
+        #os-preview .header-title {
+            font-weight: bold;
+            font-size: 16px;
+            text-align: center;
+            background: #e9ecef;
         }
-        .calendar-header { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:16px; flex-wrap:wrap; }
-        .calendar-nav { display:flex; align-items:center; gap:8px; }
-        .calendar-nav button {
-            padding:8px 12px; border-radius:var(--radius-xs); border:1px solid var(--input-border);
-            background:var(--input-bg); color:var(--text); cursor:pointer; font-size:0.85rem; font-weight:600;
-            transition:all 0.2s;
+        #os-preview .section-title {
+            font-weight: bold;
+            background: #f1f3f5;
         }
-        .calendar-nav button:hover { background:var(--accent); color:#fff; border-color:var(--accent); }
-        .calendar-title { font-size:1.1rem; font-weight:700; min-width:160px; text-align:center; }
-        .calendar-grid { display:grid; grid-template-columns:repeat(7, 1fr); gap:4px; }
-        .calendar-day-header { text-align:center; font-weight:700; font-size:0.75rem; text-transform:uppercase; color:var(--text-muted); padding:8px 4px; letter-spacing:0.5px; }
-        .calendar-day {
-            aspect-ratio:1/1; border-radius:var(--radius-xs); padding:8px; cursor:pointer; transition:background 0.2s, transform 0.15s;
-            border:1px solid transparent; min-height:70px; display:flex; flex-direction:column; font-size:0.8rem;
-            position:relative; background:rgba(128,128,128,0.05);
+        #os-preview .company-logo {
+            text-align: center;
+            font-weight: bold;
+            font-size: 14px;
         }
-        .calendar-day:hover { background:rgba(99,102,241,0.08); border-color:var(--input-border); transform:scale(1.02); }
-        .calendar-day.today { border:2px solid var(--calendar-today); background:rgba(99,102,241,0.08); }
-        .calendar-day.selected { background:var(--calendar-selected); border:2px solid var(--accent); }
-        .calendar-day.other-month { opacity:0.35; pointer-events:none; }
-        .calendar-day .day-number { font-weight:700; margin-bottom:4px; font-size:0.85rem; }
-        .calendar-day .day-indicator { font-size:0.68rem; line-height:1.3; font-weight:600; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-        .calendar-day .day-indicator.credit { color:var(--green); }
-        .calendar-day .day-indicator.debit { color:var(--red); }
-
-        /* Toasts */
-        .toast-container { position:fixed; top:20px; right:20px; z-index:9999; display:flex; flex-direction:column; gap:8px; pointer-events:none; }
-        .toast {
-            padding:14px 20px; border-radius:var(--radius-sm); background:var(--card-bg);
-            backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px); border:1px solid var(--card-border);
-            box-shadow:var(--shadow-hover); font-weight:600; font-size:0.85rem; color:var(--text);
-            pointer-events:auto; animation:slideInRight 0.35s ease; display:flex; align-items:center; gap:10px;
-            min-width:280px; max-width:400px;
+        .signature-area {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
         }
-        .toast.success { border-left:4px solid var(--toast-success); }
-        .toast.error { border-left:4px solid var(--toast-error); }
-        .toast.info { border-left:4px solid var(--toast-info); }
-        .toast .toast-icon { font-size:1.2rem; flex-shrink:0; }
-        @keyframes slideInRight { from { opacity:0; transform:translateX(60px); } to { opacity:1; transform:translateX(0); } }
-        .toast.removing { animation:fadeOut 0.3s ease forwards; }
-        @keyframes fadeOut { to { opacity:0; transform:translateX(40px); } }
-
-        /* Loading overlay */
-        .loading-overlay {
-            position:fixed; top:0; left:0; width:100%; height:100%; background:var(--overlay-bg);
-            backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px); z-index:10000; display:flex;
-            flex-direction:column; align-items:center; justify-content:center; gap:16px; transition:opacity 0.4s;
+        .signature-area div {
+            width: 45%;
         }
-        .loading-overlay.hidden { opacity:0; pointer-events:none; }
-        .spinner { width:56px; height:56px; border:4px solid rgba(255,255,255,0.2); border-top-color:var(--accent); border-radius:50%; animation:spin 0.8s linear infinite; }
-        @keyframes spin { to { transform:rotate(360deg); } }
-        .loading-text { font-size:1rem; font-weight:700; color:#fff; letter-spacing:0.5px; }
-
-        /* Responsive */
-        @media (max-width:1024px) {
-            .charts-grid { grid-template-columns:1fr; }
-            .cards-row { grid-template-columns:repeat(auto-fit, minmax(160px, 1fr)); }
+        .signature-line {
+            border-bottom: 1px solid #000;
+            margin-top: 30px;
+            margin-bottom: 4px;
         }
-        @media (max-width:768px) {
-            .sidebar { transform:translateX(-100%); width:var(--sidebar-width) !important; }
-            .sidebar.mobile-open { transform:translateX(0); box-shadow:4px 0 30px rgba(0,0,0,0.25); }
-            .sidebar.collapsed { width:var(--sidebar-width) !important; }
-            .sidebar.collapsed .nav-item .label { opacity:1; width:auto; display:inline; }
-            .sidebar.collapsed .sidebar-title { opacity:1; width:auto; }
-            .sidebar.collapsed .nav-item { justify-content:flex-start; padding:11px 14px; }
-            .sidebar.collapsed .sidebar-footer { font-size:0.75rem; }
-            .main-wrapper { margin-left:0 !important; }
-            .hamburger { display:block; }
-            .header-title { font-size:0.95rem; }
-            .header-actions .btn span { display:none; }
-            .header-actions .btn { padding:9px 12px; }
-            .content { padding:12px; }
-            .cards-row { grid-template-columns:repeat(auto-fit, minmax(140px, 1fr)); gap:10px; }
-            .card { padding:14px; border-radius:var(--radius-sm); }
-            .card-value { font-size:1.3rem; }
-            .filters-bar { padding:10px 12px; gap:8px; }
-            .filter-group { min-width:100px; flex:1 1 100px; }
-            .charts-grid { grid-template-columns:1fr; gap:10px; }
-            .chart-card { padding:12px; border-radius:var(--radius-sm); }
-            .calendar-container { padding:12px; border-radius:var(--radius-sm); }
-            .calendar-day { min-height:50px; padding:4px; font-size:0.7rem; }
-            .calendar-day .day-indicator { font-size:0.6rem; }
-            .toast-container { top:10px; right:10px; left:10px; }
-            .toast { min-width:auto; max-width:100%; }
+        /* Responsivo */
+        @media (max-width: 700px) {
+            .form-grid { grid-template-columns: 1fr; }
+            .actions { flex-direction: column; align-items: stretch; }
+            .btn-pdf { margin-left: 0; margin-top: 8px; }
         }
-        @media (max-width:480px) {
-            .cards-row { grid-template-columns:repeat(auto-fit, minmax(120px, 1fr)); gap:8px; }
-            .card { padding:10px; }
-            .card-value { font-size:1.1rem; }
-            .card-icon { width:32px; height:32px; font-size:1rem; border-radius:8px; }
-            .header { padding:0 12px; gap:6px; }
-            .btn { padding:7px 10px; font-size:0.75rem; }
-        }
-
-        .sidebar-overlay {
-            position:fixed; top:0; left:0; width:100%; height:100%;
-            background:rgba(0,0,0,0.4); z-index:999; display:none;
-        }
-        .sidebar-overlay.visible { display:block; }
-
-        .empty-state { text-align:center; padding:40px 20px; color:var(--text-muted); font-size:0.95rem; }
-        .empty-state .icon { font-size:3rem; margin-bottom:12px; opacity:0.5; }
     </style>
 </head>
 <body>
-    <div class="sidebar-overlay" id="sidebarOverlay"></div>
-    <aside class="sidebar" id="sidebar">
-        <div class="sidebar-header">
-            <div class="sidebar-logo">📊</div>
-            <span class="sidebar-title">Dashboard Fin</span>
+<div class="container">
+    <h1>📄 Ordem de Serviço - Automatizada</h1>
+    <p class="subtitle">Preencha os dados, escolha a função e gere o PDF</p>
+
+    <!-- Formulário -->
+    <div class="form-grid">
+        <div>
+            <label>Empresa *</label>
+            <input type="text" id="empresa" value="CONSTRUTORA PIACENTINI LTDA">
         </div>
-        <nav class="sidebar-nav" id="sidebarNav">
-            <button class="nav-item active" data-page="resumo"><span class="icon">📋</span><span class="label">Resumo Geral</span></button>
-            <button class="nav-item" data-page="debitos"><span class="icon">🔻</span><span class="label">Débitos</span></button>
-            <button class="nav-item" data-page="creditos"><span class="icon">🔺</span><span class="label">Créditos</span></button>
-            <button class="nav-item" data-page="dre"><span class="icon">📄</span><span class="label">D.R.E.</span></button>
-            <button class="nav-item" data-page="tendencias"><span class="icon">📈</span><span class="label">Tendências</span></button>
-            <button class="nav-item" data-page="bancos"><span class="icon">🏦</span><span class="label">Bancos</span></button>
-            <button class="nav-item" data-page="pessoas"><span class="icon">👥</span><span class="label">Pessoas</span></button>
-            <button class="nav-item" data-page="formas"><span class="icon">💳</span><span class="label">Formas de Pagamento</span></button>
-            <button class="nav-item" data-page="inadimplencia"><span class="icon">⚠️</span><span class="label">Inadimplência</span></button>
-            <button class="nav-item" data-page="calendario"><span class="icon">📅</span><span class="label">Calendário Geral</span></button>
-            <button class="nav-item" data-page="comparativo"><span class="icon">📊</span><span class="label">Comparativo Anual</span></button>
-            <button class="nav-item" data-page="analise"><span class="icon">📑</span><span class="label">Análise Mensal</span></button>
-        </nav>
-        <div class="sidebar-footer">v1.0 • Glass Dashboard</div>
-    </aside>
+        <div>
+            <label>CNPJ</label>
+            <input type="text" id="cnpj" value="76.307.024/0001-50">
+        </div>
+        <div>
+            <label>Setor</label>
+            <input type="text" id="setor" value="Obra">
+        </div>
+        <div>
+            <label>Função *</label>
+            <select id="funcao" onchange="carregarDadosFuncao()"></select>
+        </div>
+        <div>
+            <label>Nome do Funcionário *</label>
+            <input type="text" id="nome" placeholder="Nome completo">
+        </div>
+        <div>
+            <label>CPF *</label>
+            <input type="text" id="cpf" placeholder="000.000.000-00">
+        </div>
+        <div>
+            <label>Data de Admissão</label>
+            <input type="date" id="admissao">
+        </div>
+        <div>
+            <label>Data da OS</label>
+            <input type="date" id="dataOs" value="2026-03-18">
+        </div>
+        <div class="full">
+            <label>Local (cidade/UF) *</label>
+            <input type="text" id="local" value="Foz do Iguaçu - PR">
+        </div>
+        <div class="full">
+            <label>Observações / Complementos</label>
+            <textarea id="obs" placeholder="Informações adicionais (opcional)"></textarea>
+        </div>
+    </div>
 
-    <div class="main-wrapper" id="mainWrapper">
-        <header class="header">
-            <button class="hamburger" id="hamburgerBtn" aria-label="Menu">☰</button>
-            <h1 class="header-title" id="headerTitle">Resumo Geral</h1>
-            <span class="clock" id="clock">--:--:--</span>
-            <div class="header-actions">
-                <button class="btn" id="btnAtualizar" title="Atualizar dados (atalho: R)">🔄 <span>Atualizar</span></button>
-                <button class="btn" id="btnDarkMode" title="Alternar tema (atalho: D)">🌙 <span>Dark Mode</span></button>
-                <a class="btn" href="https://docs.google.com/spreadsheets/d/e/2PACX-1vSWlUNgP29Erp8Rh5AZPg430wul7T9IwPBPgozPQpO2ig9g8gpJoTn4JNfcKAbBSNH59VngkPE4A7dF/pub" target="_blank" rel="noopener" title="Abrir planilha">📗 <span>Planilha</span></a>
-                <button class="btn" id="btnImprimir" title="Imprimir (atalho: P)">🖨️ <span>Imprimir</span></button>
+    <div class="actions">
+        <button class="btn" onclick="atualizarPreview()">🔄 Atualizar Visualização</button>
+        <button class="btn btn-pdf" onclick="gerarPDF()">📥 Gerar PDF</button>
+    </div>
+
+    <!-- Preview da OS -->
+    <div id="os-preview"></div>
+</div>
+
+<script>
+    // ============================================================
+    // BANCO DE DADOS DE FUNÇÕES (completas)
+    // ============================================================
+    const funcoesDB = {
+        // ---------- EXISTENTES ----------
+        "Almoxarife": {
+            setor: "Almoxarifado",
+            atividades: "Recepcionam, conferem e armazenam produtos e materiais em almoxarifados, armazéns, silos e depósitos. Fazem os lançamentos da movimentação de entradas e saídas e controlam os estoques. Distribuem produtos e materiais a serem expedidos. Organiza o almoxarifado para facilitar a movimentação dos itens armazenados e a armazenar.",
+            riscos: "RISCOS QUÍMICOS: Nenhum\nRISCOS FÍSICOS: Ruído\nRISCOS ERGONÔMICOS: Postura inadequada, levantamento e transporte manual de cargas\nRISCOS MECÂNICOS E ACIDENTES: Cortes, contusões, perfurações, queda de materiais sobre membros, queda de níveis diferentes.\nRISCOS BIOLÓGICOS: Nenhum",
+            epis: "Capacete de Segurança; Óculos de segurança com proteção lateral; Luva de vaqueta; Botina de segurança; Protetor Auricular (em ambientes ruidosos); Cinto de segurança (trabalho em altura).",
+            treinamentos: "Treinamento introdutório e de reciclagem específico; Treinamento na correta utilização dos EPI's; Treinamento de Trabalho em Altura; Treinamento de Levantamento e Transporte Manual de Cargas; Treinamento de Noções Básicas de Primeiros Socorros."
+        },
+        "Armador": {
+            setor: "Obra",
+            atividades: "Preparar a confecção de armações de estruturas de concreto e de corpos de prova; Cortar ferragens; Dobrar ferragens; Montar armações; Posicionar armações.",
+            riscos: "RISCOS QUÍMICOS: Nenhum\nRISCOS FÍSICOS: Ruído\nRISCOS ERGONÔMICOS: Postura inadequada, levantamento e transporte manual de cargas\nRISCOS MECÂNICOS E ACIDENTES: Cortes, contusões, perfurações, queda de materiais sobre membros, queda de níveis diferentes.\nRISCOS BIOLÓGICOS: Nenhum",
+            epis: "Capacete de Segurança; Óculos de segurança com proteção lateral; Luva de vaqueta; Botina de segurança; Protetor Auricular (em ambientes ruidosos); Cinto de segurança (acima de 2m).",
+            treinamentos: "Treinamento introdutório e de reciclagem; Treinamento EPI's; Treinamento Trabalho em Altura; Treinamento Levantamento e Transporte de Cargas; Treinamento Primeiros Socorros."
+        },
+        "Assistente de RH": {
+            setor: "Administração",
+            atividades: "Preparar documentação para admissão (Contrato, CTPS, Seguro de Vida, Plano de Saúde etc.); Emitir recibos de pagamento; Cadastrar profissionais no sistema de folha; Abrir contas salário; Incluir/alterar/cancelar dados no plano médico; Preparar documentação para processos trabalhistas; Homologar rescisões; Acompanhar banco de horas; Controlar apuração de pontos; Calcular férias; Manter arquivo.",
+            riscos: "RISCOS QUÍMICOS: Nenhum\nRISCOS FÍSICOS: Nenhum\nRISCOS ERGONÔMICOS: Postura inadequada\nRISCOS MECÂNICOS E ACIDENTES: Nenhum\nRISCOS BIOLÓGICOS: Nenhum",
+            epis: "Sapato fechado.",
+            treinamentos: "Treinamento introdutório e de reciclagem; Treinamento EPI's; Treinamento de Noções Básicas de Primeiros Socorros."
+        },
+        "Auxiliar de Qualidade": {
+            setor: "Administração",
+            atividades: "Divulgar a Política da Qualidade; Preparar e realizar treinamentos da qualidade; Controlar instrumentos de medição; Controlar e distribuir documentos do SGQ; Solicitar alteração de documentos; Verificar cumprimento de procedimentos; Auxiliar no preenchimento de registros; Auxiliar na elaboração do PQO; Auxiliar no controle de projetos; Atender áreas em assuntos de qualidade.",
+            riscos: "RISCOS QUÍMICOS: Nenhum\nRISCOS FÍSICOS: Nenhum\nRISCOS ERGONÔMICOS: Postura inadequada\nRISCOS MECÂNICOS E ACIDENTES: Nenhum\nRISCOS BIOLÓGICOS: Nenhum",
+            epis: "Sapato fechado.",
+            treinamentos: "Treinamento introdutório e de reciclagem; Treinamento EPI's; Treinamento Primeiros Socorros."
+        },
+        "Auxiliar de Almoxarife": {
+            setor: "Almoxarifado",
+            atividades: "Auxiliar o almoxarife; Informar ao almoxarife ocorrências; Auxiliar no controle de estoque; Distribuir materiais, equipamentos e ferramentas; Controlar e receber devolução de equipamentos; Cuidar de materiais de clientes.",
+            riscos: "RISCOS QUÍMICOS: Nenhum\nRISCOS FÍSICOS: Ruído\nRISCOS ERGONÔMICOS: Postura inadequada, levantamento e transporte manual de cargas\nRISCOS MECÂNICOS E ACIDENTES: Cortes, contusões, perfurações, quedas de materiais sobre membros.\nRISCOS BIOLÓGICOS: Nenhum",
+            epis: "Luva de vaqueta (eventualmente); Botina de segurança; Protetor Auricular (em ambientes ruidosos).",
+            treinamentos: "Treinamento introdutório; Treinamento EPI's; Treinamento Levantamento de Cargas; Treinamento Primeiros Socorros."
+        },
+        "Carpinteiro": {
+            setor: "Obra",
+            atividades: "Executar os serviços de carpintaria, conforme projeto/instruções recebidas do respectivo mestre/encarregado/feitor.",
+            riscos: "RISCOS QUÍMICOS: Poeira mineral, poeira de madeira\nRISCOS FÍSICOS: Ruído, radiação não ionizante\nRISCOS ERGONÔMICOS: Postura inadequada, levantamento e transporte manual de cargas\nRISCOS MECÂNICOS E ACIDENTES: Cortes, contusões, perfurações, quedas de materiais sobre membro\nRISCOS BIOLÓGICOS: Nenhum",
+            epis: "Capacete de Segurança; Óculos de segurança com proteção lateral; Luva de vaqueta; Botina de segurança; Bloqueador solar; Protetor Auricular (em ambientes ruidosos).",
+            treinamentos: "Treinamento introdutório; Treinamento EPI's; Treinamento Trabalho em Altura; Treinamento Levantamento de Cargas; Treinamento Primeiros Socorros."
+        },
+        "Encarregado Geral": {
+            setor: "Produção",
+            atividades: "Supervisiona as equipes no geral dentro do canteiro de obra; Controla recursos produtivos (arranjos físicos, equipamentos, materiais, insumos e equipes); Controla padrões produtivos (inspeção da qualidade, orientação sobre especificação, fluxo e movimentação); Auxilia na administração do cronograma; Zelar pela segurança dos trabalhadores.",
+            riscos: "RISCOS QUÍMICOS: Poeira\nRISCOS FÍSICOS: Ruído\nRISCOS ERGONÔMICOS: Postura inadequada\nRISCOS MECÂNICOS E ACIDENTES: Cortes, contusões, perfurações e quedas de materiais sobre membros.\nRISCOS BIOLÓGICOS: Nenhum",
+            epis: "Capacete de Segurança; Óculos de segurança com proteção lateral; Botina de segurança; Protetor Auricular (em ambientes ruidosos).",
+            treinamentos: "Treinamento introdutório; Treinamento EPI's; Treinamento Trabalho em Altura; Treinamento Levantamento de Cargas; Treinamento Primeiros Socorros."
+        },
+        "Engenheiro": {
+            setor: "Engenharia",
+            atividades: "Acompanham o desenvolvimento de projetos de engenharia, executam obras, planejam, contratam empreendimentos, coordenam a operação e a manutenção; Controlam a qualidade dos suprimentos e serviços; Coordena a obra no contexto geral.",
+            riscos: "RISCOS QUÍMICOS: Particulados (PNOS) respiráveis; sílica livre (poeira respirável)\nRISCOS FÍSICOS: Ruído Contínuo\nRISCOS ERGONÔMICOS: Postura de pé por longos períodos\nRISCOS MECÂNICOS E ACIDENTES: Intempéries; projeção de partículas; queda de objetos; queda de pessoa em mesmo nível; trabalho em altura\nRISCOS BIOLÓGICOS: Nenhum",
+            epis: "Protetor auditivo; Respirador PFF2; Botina de segurança; Capuz ou balaclava; Óculos; Vestimenta tipo capa; Capacete; Cinturão de segurança com Talabarte ou trava-queda.",
+            treinamentos: "Treinamento introdutório; Treinamento EPI's; Treinamento Trabalho em Altura; Treinamento Primeiros Socorros."
+        },
+        "Meio Oficial": {
+            setor: "Obra",
+            atividades: "Auxiliar o oficial na execução dos serviços da área de atuação (elétrica, alvenaria, pavimentação, carpintaria, armação, hidráulica/esgoto etc).",
+            riscos: "RISCOS QUÍMICOS: Poeira incômoda\nRISCOS FÍSICOS: Ruído, radiação não ionizante\nRISCOS ERGONÔMICOS: Postura inadequada, levantamento e transporte manual de cargas\nRISCOS MECÂNICOS E ACIDENTES: Cortes, contusões, perfurações, quedas de materiais sobre membros\nRISCOS BIOLÓGICOS: Esgoto",
+            epis: "Capacete de Segurança; Óculos de segurança com proteção lateral; Luva de vaqueta; Luva de borracha; Botina de segurança; Protetor Auricular (em ambientes ruidosos).",
+            treinamentos: "Treinamento introdutório; Treinamento EPI's; Treinamento Trabalho em Altura; Treinamento Levantamento de Cargas; Treinamento Primeiros Socorros."
+        },
+        "Meio Oficial de Armador": {
+            setor: "Obra",
+            atividades: "Auxilia o Armador nas suas diversas atividades diárias.",
+            riscos: "RISCOS QUÍMICOS: Poeira incomoda\nRISCOS FÍSICOS: Ruído, radiação não ionizante\nRISCOS ERGONÔMICOS: Postura inadequada, levantamento e transporte manual de cargas\nRISCOS MECÂNICOS E ACIDENTES: Cortes, contusões, perfurações, quedas de materiais sobre membros\nRISCOS BIOLÓGICOS: Nenhum",
+            epis: "Capacete de Segurança; Óculos de segurança com proteção lateral; Luva de vaqueta; Botina de segurança; Protetor Auricular (em ambientes ruidosos).",
+            treinamentos: "Treinamento introdutório; Treinamento EPI's; Treinamento Trabalho em Altura; Treinamento Levantamento de Cargas; Treinamento Primeiros Socorros."
+        },
+        "Meio Oficial de Carpinteiro": {
+            setor: "Obra",
+            atividades: "Auxiliar o carpinteiro nas suas diversas atividades diárias.",
+            riscos: "RISCOS QUÍMICOS: Poeira incomoda\nRISCOS FÍSICOS: Ruído, radiação não ionizante\nRISCOS ERGONÔMICOS: Postura inadequada, levantamento e transporte manual de cargas\nRISCOS MECÂNICOS E ACIDENTES: Cortes, contusões, perfurações, quedas de materiais sobre membros\nRISCOS BIOLÓGICOS: Nenhum",
+            epis: "Capacete de Segurança; Óculos de segurança com proteção lateral; Luva de vaqueta; Botina de segurança; Protetor Auricular (em ambientes ruidosos).",
+            treinamentos: "Treinamento introdutório; Treinamento EPI's; Treinamento Trabalho em Altura; Treinamento Levantamento de Cargas; Treinamento Primeiros Socorros."
+        },
+        "Meio Oficial de Pedreiro": {
+            setor: "Obra",
+            atividades: "Auxilia o pedreiro nas suas diversas atividades diárias.",
+            riscos: "RISCOS QUÍMICOS: Poeira incomoda\nRISCOS FÍSICOS: Ruído, radiação não ionizante\nRISCOS ERGONÔMICOS: Postura inadequada, levantamento e transporte manual de cargas\nRISCOS MECÂNICOS E ACIDENTES: Cortes, contusões, perfurações, quedas de materiais sobre membros\nRISCOS BIOLÓGICOS: Nenhum",
+            epis: "Capacete de Segurança; Óculos de segurança com proteção lateral; Luva de vaqueta; Botina de segurança; Protetor Auricular (em ambientes ruidosos).",
+            treinamentos: "Treinamento introdutório; Treinamento EPI's; Treinamento Trabalho em Altura; Treinamento Levantamento de Cargas; Treinamento Primeiros Socorros."
+        },
+        "Mestre de Obras": {
+            setor: "Obra",
+            atividades: "Supervisionar as equipes no geral dentro do canteiro de obra; Controlar recursos produtivos; Controlar padrões produtivos (inspeção de qualidade, especificação, fluxo e movimentação de materiais, medidas de segurança).",
+            riscos: "RISCOS QUÍMICOS: Poeira mineral (SIO²)\nRISCOS FÍSICOS: Ruído contínuo - Eventual\nRISCOS ERGONÔMICOS: Postura Inadequada\nRISCOS MECÂNICOS E ACIDENTES: Queda (trabalho em altura); cortes, queda e perfurações\nRISCOS BIOLÓGICOS: Nenhum",
+            epis: "Capacete com jugular; Protetor auditivo tipo plug; Botina de segurança; Cinturão de segurança com talabarte ou trava queda.",
+            treinamentos: "Treinamento introdutório; Treinamento EPI's; Treinamento Trabalho em Altura; Treinamento Primeiros Socorros."
+        },
+        "Montador de Andaimes": {
+            setor: "Obra",
+            atividades: "Realizar a montagem e desmontagem de andaimes metálicos; Realizar a conferência das peças dos andaimes a serem montados; Preparar o local para a montagem dos andaimes.",
+            riscos: "RISCOS QUÍMICOS: Nenhum\nRISCOS FÍSICOS: Ruído, radiação não ionizante\nRISCOS ERGONÔMICOS: Postura inadequada\nRISCOS MECÂNICOS E ACIDENTES: Cortes, contusões, perfurações e quedas.\nRISCOS BIOLÓGICOS: Nenhum",
+            epis: "Capacete de Segurança; Óculos de segurança com proteção lateral; Botina de segurança; Protetor Auricular (em ambientes ruidosos); Luva tipo gladiador; Cinto de segurança contra quedas.",
+            treinamentos: "Treinamento introdutório; Treinamento específico para montagem/desmontagem de andaime; Treinamento EPI's; Treinamento Trabalho em Altura; Treinamento Levantamento de Cargas; Treinamento Primeiros Socorros."
+        },
+        "Pedreiro": {
+            setor: "Obra",
+            atividades: "Vibrar e acabar serviços em concreto; Executar alvenarias, chapiscos, rebocos e emboços; Executar acabamentos e revestimentos; Assentar elementos pré-moldados de concreto em geral.",
+            riscos: "RISCOS QUÍMICOS: Poeira mineral (cimento)\nRISCOS FÍSICOS: Ruído, radiação não ionizante\nRISCOS ERGONÔMICOS: Postura inadequada, levantamento e transporte manual de cargas\nRISCOS MECÂNICOS E ACIDENTES: Cortes, contusões, perfurações, quedas de materiais sobre membros\nRISCOS BIOLÓGICOS: Nenhum",
+            epis: "Capacete de Segurança; Óculos de segurança com proteção lateral; Luva de Látex; Botina de segurança; Protetor Auricular (em ambientes ruidosos).",
+            treinamentos: "Treinamento introdutório; Treinamento EPI's; Treinamento Trabalho em Altura; Treinamento Levantamento de Cargas; Treinamento Primeiros Socorros."
+        },
+        "Porteiro": {
+            setor: "Vigilância Patrimonial",
+            atividades: "Realizar controle de acesso de funcionários, visitantes e fornecedores dentro do canteiro de obras; Inspecionar as dependências da obra/empresa para evitar incêndio, roubos, intrusão e outras anormalidades.",
+            riscos: "RISCOS QUÍMICOS: Nenhum\nRISCOS FÍSICOS: Nenhum\nRISCOS ERGONÔMICOS: Postura inadequada\nRISCOS MECÂNICOS E ACIDENTES: Nenhum\nRISCOS BIOLÓGICOS: Nenhum",
+            epis: "Botina de Segurança.",
+            treinamentos: "Treinamento introdutório; Treinamento EPI's; Treinamento Trabalho em Altura; Treinamento Levantamento de Cargas; Treinamento Primeiros Socorros."
+        },
+        "Servente": {
+            setor: "Obra",
+            atividades: "Executar atividades de demolições de pavimentos/alvenaria/concreto/cobertura/esquadrias; Escavações diversas; Remoções de materiais demolidos e escavações; Limpeza; Carga e descarga de materiais; Transporte de materiais e equipamentos; Aterros e compactações; Produção de argamassa, concretos; Limpeza de equipamentos; Auxiliar os oficiais.",
+            riscos: "RISCOS QUÍMICOS: Poeira mineral (cimento) - Eventual\nRISCOS FÍSICOS: Ruído, radiação não ionizante\nRISCOS ERGONÔMICOS: Postura inadequada, levantamento e transporte manual de cargas\nRISCOS MECÂNICOS E ACIDENTES: Cortes, contusões, perfurações, quedas de materiais sobre membros\nRISCOS BIOLÓGICOS: Nenhum",
+            epis: "Capacete de Segurança; Óculos de segurança com proteção lateral; Luva de Raspa; Botina de segurança; Protetor Auricular (em ambientes ruidosos).",
+            treinamentos: "Treinamento introdutório; Treinamento EPI's; Treinamento Trabalho em Altura; Treinamento Levantamento de Cargas; Treinamento Primeiros Socorros."
+        },
+        "Auxiliar de Serviços Gerais": {
+            setor: "Obra",
+            atividades: "Cuidar da limpeza das partes comuns do escritório ou república, limpeza de vidros, retirada de lixo, varrição e limpeza de móveis e equipamentos.",
+            riscos: "RISCOS QUÍMICOS: Produtos de limpeza\nRISCOS FÍSICOS: Umidade\nRISCOS ERGONÔMICOS: Postura inadequada\nRISCOS MECÂNICOS E ACIDENTES: Cortes, contusões, perfurações, quedas de materiais sobre membros\nRISCOS BIOLÓGICOS: Nenhum",
+            epis: "Capacete com jugular; Avental de PVC; Luva de PVC; Botina de segurança; Bota PVC.",
+            treinamentos: "Treinamento introdutório; Treinamento EPI's; Treinamento Trabalho em Altura; Treinamento Levantamento de Cargas; Treinamento Primeiros Socorros."
+        },
+        "Técnico em Segurança do Trabalho": {
+            setor: "engenharia / Obra",
+            atividades: "Ministrar treinamento de segurança; Orientar e acompanhar a execução dos serviços adotando medidas de segurança; Estruturar a CIPA e auxiliar na elaboração do PCMAT; Auxiliar na elaboração e implementação do PCMSO e PCMAT; Informar o engenheiro quanto às ocorrências; Avaliar condições ambientes; Auxiliar na organização de arquivos; Zelar pela segurança, EPIs/EPCs; Zelar pelo tratamento de resíduos; Preencher CAT; Dar assistência ao acidentado; Contabilizar e divulgar estatísticas.",
+            riscos: "RISCOS QUÍMICOS: Nenhum\nRISCOS FÍSICOS: Ruído\nRISCOS ERGONÔMICOS: Postura inadequada\nRISCOS MECÂNICOS E ACIDENTES: Trabalho em altura\nRISCOS BIOLÓGICOS: Nenhum",
+            epis: "Capacete com jugular; Botina de Segurança; Óculos de Proteção; Bloqueador solar; Protetor Auricular (em ambientes ruidosos).",
+            treinamentos: "Treinamento introdutório; Treinamento Trabalho em Altura; Treinamento Primeiros Socorros."
+        },
+        // ---------- NOVAS FUNÇÕES (complementares) ----------
+        "Eletricista": {
+            setor: "Obra",
+            atividades: "Instalar, manter e reparar sistemas elétricos em obras; Executar instalações elétricas prediais e industriais; Realizar manutenção em quadros de distribuição, tomadas, interruptores e luminárias; Interpretar projetos elétricos; Atuar em conformidade com a NR-10 (Segurança em Instalações e Serviços em Eletricidade).",
+            riscos: "RISCOS QUÍMICOS: Nenhum\nRISCOS FÍSICOS: Ruído, radiação não ionizante\nRISCOS ERGONÔMICOS: Postura inadequada, levantamento e transporte manual de cargas\nRISCOS MECÂNICOS E ACIDENTES: Choque elétrico, cortes, contusões, quedas de materiais, trabalho em altura\nRISCOS BIOLÓGICOS: Nenhum",
+            epis: "Capacete de Segurança; Óculos de segurança; Luva isolante (para baixa/média/alta tensão); Botina de segurança (com isolamento); Protetor Auricular; Cinto de segurança para trabalho em altura; Vestimenta adequada (uniforme antiestático).",
+            treinamentos: "Treinamento introdutório; Treinamento EPI's; Treinamento NR-10 (Segurança com Eletricidade); Treinamento Trabalho em Altura; Treinamento Levantamento de Cargas; Treinamento Primeiros Socorros."
+        },
+        "Encanador": {
+            setor: "Obra",
+            atividades: "Executar instalações hidráulicas e sanitárias; Montar e reparar tubulações de água, esgoto e gás; Interpretar projetos hidráulicos; Realizar testes de pressão e vazamento; Instalar equipamentos como bombas, válvulas e registros.",
+            riscos: "RISCOS QUÍMICOS: Produtos químicos (solventes, colas, etc.)\nRISCOS FÍSICOS: Ruído, radiação não ionizante\nRISCOS ERGONÔMICOS: Postura inadequada, levantamento e transporte manual de cargas\nRISCOS MECÂNICOS E ACIDENTES: Cortes, contusões, perfurações, quedas, queimaduras (solda)\nRISCOS BIOLÓGICOS: Contato com esgoto (agentes patogênicos)",
+            epis: "Capacete de Segurança; Óculos de segurança; Luva de borracha (para produtos químicos); Luva de vaqueta (para manuseio); Botina de segurança; Protetor Auricular; Cinto de segurança (altura).",
+            treinamentos: "Treinamento introdutório; Treinamento EPI's; Treinamento Trabalho em Altura; Treinamento Levantamento de Cargas; Treinamento Primeiros Socorros; Treinamento para manuseio de produtos químicos."
+        },
+        "Soldador": {
+            setor: "Obra",
+            atividades: "Realizar soldagem em estruturas metálicas, tubulações, equipamentos; Preparar peças para soldagem (corte, chanfro, limpeza); Executar soldas com eletrodo revestido, MIG/MAG, TIG ou arco submerso; Inspecionar a qualidade das soldas; Realizar manutenção de equipamentos de solda.",
+            riscos: "RISCOS QUÍMICOS: Fumos metálicos, gases (ozônio, dióxido de nitrogênio)\nRISCOS FÍSICOS: Ruído, radiação não ionizante (ultravioleta, infravermelho), calor\nRISCOS ERGONÔMICOS: Postura inadequada, levantamento de cargas\nRISCOS MECÂNICOS E ACIDENTES: Queimaduras, projeção de partículas, choque elétrico, incêndio/explosão\nRISCOS BIOLÓGICOS: Nenhum",
+            epis: "Máscara de solda (com filtro escuro); Óculos de segurança; Luvas de raspa ou vaqueta (com punho longo); Avental de couro ou raspa; Botina de segurança (com biqueira de aço); Protetor Auricular; Respirador para fumos metálicos.",
+            treinamentos: "Treinamento introdutório; Treinamento EPI's; Treinamento específico de soldagem; Treinamento NR-10 (segurança elétrica); Treinamento combate a incêndio; Treinamento Primeiros Socorros."
+        },
+        "Pintor": {
+            setor: "Obra",
+            atividades: "Preparar superfícies (limpeza, lixamento, aplicação de fundos); Aplicar tintas, vernizes e revestimentos em paredes, tetos, estruturas e esquadrias; Utilizar pistolas, rolos e pincéis; Realizar acabamentos e texturas; Controlar a qualidade do serviço.",
+            riscos: "RISCOS QUÍMICOS: Solventes, tintas, thinner, vernizes (inalação, contato com pele)\nRISCOS FÍSICOS: Ruído (compressores), radiação não ionizante (luz solar)\nRISCOS ERGONÔMICOS: Postura inadequada, trabalho em altura\nRISCOS MECÂNICOS E ACIDENTES: Quedas (andaimes, escadas), cortes, projeção de partículas\nRISCOS BIOLÓGICOS: Nenhum",
+            epis: "Capacete de Segurança; Óculos de segurança (com proteção lateral); Luvas de PVC ou nitrílica (contato com produtos); Máscara respiratória com filtro para solventes; Botina de segurança; Avental ou macacão; Protetor Auricular; Cinto de segurança para altura.",
+            treinamentos: "Treinamento introdutório; Treinamento EPI's; Treinamento Trabalho em Altura; Treinamento Levantamento de Cargas; Treinamento Primeiros Socorros; Treinamento para manuseio de produtos químicos."
+        },
+        "Operador de Máquinas": {
+            setor: "Obra",
+            atividades: "Operar máquinas pesadas (escavadeiras, retroescavadeiras, tratores, betoneiras, guindastes, etc.); Realizar manutenção básica e inspeção diária; Seguir planos de carga e descarga; Zelar pela segurança de pedestres e outros operários.",
+            riscos: "RISCOS QUÍMICOS: Combustíveis, lubrificantes, gases de escape\nRISCOS FÍSICOS: Ruído intenso, vibração, calor\nRISCOS ERGONÔMICOS: Postura inadequada, vibração corpo inteiro\nRISCOS MECÂNICOS E ACIDENTES: Atropelamento, colisão, capotamento, queda de objetos, cortes/contusões\nRISCOS BIOLÓGICOS: Nenhum",
+            epis: "Capacete de Segurança; Óculos de segurança; Protetor Auricular (tipo concha); Luvas de vaqueta ou raspa; Botina de segurança (com biqueira de aço); Cinto de segurança (para máquinas com cabine sem ROPS); Vestimenta de alta visibilidade.",
+            treinamentos: "Treinamento introdutório; Treinamento específico para a máquina; Treinamento EPI's; Treinamento NR-11 (Transporte, Movimentação, Armazenagem); Treinamento Primeiros Socorros."
+        },
+        "Vigia": {
+            setor: "Vigilância Patrimonial",
+            atividades: "Realizar ronda e monitoramento do patrimônio; Controlar acesso de pessoas e veículos; Acionar autoridades em situações de emergência; Registrar ocorrências; Zelar pela integridade de bens e equipamentos.",
+            riscos: "RISCOS QUÍMICOS: Nenhum\nRISCOS FÍSICOS: Nenhum\nRISCOS ERGONÔMICOS: Postura inadequada, trabalho noturno (alterações do ciclo sono-vigília)\nRISCOS MECÂNICOS E ACIDENTES: Nenhum\nRISCOS BIOLÓGICOS: Nenhum",
+            epis: "Botina de segurança; Uniforme; Coletes refletivos (para ronda noturna); Lanterna (fornecida pela empresa).",
+            treinamentos: "Treinamento introdutório; Treinamento EPI's; Treinamento Primeiros Socorros; Treinamento para uso de equipamentos de monitoramento."
+        },
+        "Auxiliar de Obras": {
+            setor: "Obra",
+            atividades: "Auxiliar nas diversas tarefas da obra: carregar e descarregar materiais, limpeza, preparo de argamassa, auxílio a pedreiros, serventes e outros oficiais; Executar serviços gerais de acordo com a necessidade do canteiro.",
+            riscos: "RISCOS QUÍMICOS: Poeira mineral (cimento, areia)\nRISCOS FÍSICOS: Ruído, radiação não ionizante (sol)\nRISCOS ERGONÔMICOS: Postura inadequada, levantamento e transporte manual de cargas\nRISCOS MECÂNICOS E ACIDENTES: Cortes, contusões, perfurações, quedas de materiais sobre membros\nRISCOS BIOLÓGICOS: Nenhum",
+            epis: "Capacete de Segurança; Óculos de segurança; Luva de raspa; Botina de segurança; Protetor Auricular (em ambientes ruidosos).",
+            treinamentos: "Treinamento introdutório; Treinamento EPI's; Treinamento Levantamento de Cargas; Treinamento Primeiros Socorros."
+        }
+    };
+
+    // ============================================================
+    // INICIALIZAÇÃO
+    // ============================================================
+    const selectFuncao = document.getElementById('funcao');
+    const funcoes = Object.keys(funcoesDB).sort();
+    funcoes.forEach(f => {
+        const opt = document.createElement('option');
+        opt.value = f;
+        opt.textContent = f;
+        selectFuncao.appendChild(opt);
+    });
+
+    // Carregar dados da primeira função
+    function carregarDadosFuncao() {
+        const func = selectFuncao.value;
+        const dados = funcoesDB[func];
+        if (!dados) return;
+        document.getElementById('setor').value = dados.setor || '';
+        // Atualizar preview automaticamente
+        atualizarPreview();
+    }
+
+    // ============================================================
+    // GERAR PREVIEW DA OS
+    // ============================================================
+    function atualizarPreview() {
+        const func = selectFuncao.value;
+        const dados = funcoesDB[func];
+        if (!dados) {
+            document.getElementById('os-preview').innerHTML = '<p style="color:red;">Selecione uma função válida.</p>';
+            return;
+        }
+
+        // Capturar campos
+        const empresa = document.getElementById('empresa').value || 'NÃO INFORMADO';
+        const cnpj = document.getElementById('cnpj').value || '';
+        const setor = document.getElementById('setor').value || 'NÃO INFORMADO';
+        const nome = document.getElementById('nome').value || '_________________________';
+        const cpf = document.getElementById('cpf').value || '_________________________';
+        const admissao = document.getElementById('admissao').value ? new Date(document.getElementById('admissao').value).toLocaleDateString('pt-BR') : '____/____/____';
+        const dataOs = document.getElementById('dataOs').value ? new Date(document.getElementById('dataOs').value).toLocaleDateString('pt-BR') : '____/____/____';
+        const local = document.getElementById('local').value || 'Cidade - UF';
+        const obs = document.getElementById('obs').value || '';
+
+        // Montar HTML da OS
+        let html = `
+        <div style="font-family: Arial, sans-serif; font-size: 12px; line-height: 1.5;">
+            <table style="width:100%; border-collapse: collapse; border: 1px solid #000;">
+                <tr>
+                    <td style="border: 1px solid #000; width: 20%; text-align: center; padding: 4px;">
+                        <div style="font-size: 20px; font-weight: bold;">LOGO</div>
+                    </td>
+                    <td style="border: 1px solid #000; text-align: center; padding: 4px; font-weight: bold; font-size: 16px;">
+                        ORDEM DE SERVIÇO - OS<br>
+                        NR-01 DA PORTARIA 3.214/78<br>
+                        SEGURANÇA E MEDICINA DO TRABALHO
+                    </td>
+                </tr>
+            </table>
+            <table style="width:100%; border-collapse: collapse; margin-top: 4px; border: 1px solid #000;">
+                <tr>
+                    <td style="border: 1px solid #000; width: 15%; padding: 2px 6px; font-weight: bold;">Empresa:</td>
+                    <td style="border: 1px solid #000; width: 55%; padding: 2px 6px;">${empresa}</td>
+                    <td style="border: 1px solid #000; width: 10%; padding: 2px 6px; font-weight: bold;">CNPJ:</td>
+                    <td style="border: 1px solid #000; width: 20%; padding: 2px 6px;">${cnpj}</td>
+                </tr>
+                <tr>
+                    <td style="border: 1px solid #000; padding: 2px 6px; font-weight: bold;">Nome:</td>
+                    <td style="border: 1px solid #000; padding: 2px 6px;" colspan="3">${nome}</td>
+                </tr>
+                <tr>
+                    <td style="border: 1px solid #000; padding: 2px 6px; font-weight: bold;">CPF:</td>
+                    <td style="border: 1px solid #000; padding: 2px 6px;">${cpf}</td>
+                    <td style="border: 1px solid #000; padding: 2px 6px; font-weight: bold;">Admissão:</td>
+                    <td style="border: 1px solid #000; padding: 2px 6px;">${admissao}</td>
+                </tr>
+                <tr>
+                    <td style="border: 1px solid #000; padding: 2px 6px; font-weight: bold;">Setor:</td>
+                    <td style="border: 1px solid #000; padding: 2px 6px;">${setor}</td>
+                    <td style="border: 1px solid #000; padding: 2px 6px; font-weight: bold;">Função:</td>
+                    <td style="border: 1px solid #000; padding: 2px 6px;">${func}</td>
+                </tr>
+            </table>
+
+            <div style="margin-top: 10px;">
+                <p><strong>1. Objetivo:</strong> Este documento foi elaborado após análise dos riscos existentes nos ambientes e nos processos de trabalho e a finalidade de esclarecer os funcionários sobre os riscos de acidentes ou doenças existentes na sua função, bem como sobre as medidas preventivas necessárias para reduzir ou neutralizar a ação dos agentes agressivos.</p>
+                
+                <p><strong>2. Descrição das Atividades Desenvolvidas:</strong><br>${dados.atividades}</p>
+                
+                <p><strong>3. Tipos de Riscos de Acidentes ou Doenças:</strong></p>
+                <pre style="white-space: pre-wrap; font-family: inherit; margin: 0; background: #f9f9f9; padding: 6px; border: 1px solid #ddd;">${dados.riscos}</pre>
+                
+                <p><strong>4. Obrigações do Funcionário:</strong></p>
+                <ul style="margin-top:0;">
+                    <li>É dever do funcionário seguir rigorosamente estes procedimentos, conforme NR nº 1 da Portaria 3.214/78;</li>
+                    <li>Cumprir as normas, procedimentos e instruções de operação da empresa;</li>
+                    <li>Usar os EPI's determinados pela empresa;</li>
+                    <li>Submeter-se a exames médicos previstos na NR nº 7;</li>
+                    <li>Colaborar com o órgão no cumprimento das Normas de Segurança e Saúde no Trabalho;</li>
+                    <li>Participar dos programas e campanhas de segurança promovidos;</li>
+                    <li>Colaborar com a conservação dos EPC's, zelar pelos equipamentos de combate a incêndios;</li>
+                    <li>Colaborar pela conservação de placas de sinalização;</li>
+                    <li>Comunicar ao Encarregado ou SESMT qualquer acidente;</li>
+                    <li>Eleger e participar da CIPA;</li>
+                    <li>Respeitar orientações de encarregados e Cipeiros;</li>
+                    <li>Comunicar problemas com instalações, equipamentos e condições inseguras;</li>
+                    <li>Manter higiene, ordem e limpeza;</li>
+                    <li>Obedecer às sinalizações de segurança.</li>
+                </ul>
+
+                <p><strong>5. Proibições:</strong></p>
+                <ul>
+                    <li>Não realizar atividades que não sejam de seu conhecimento;</li>
+                    <li>Não fumar em locais sem sinalização;</li>
+                    <li>Não consumir bebida alcoólica/drogas durante o trabalho;</li>
+                    <li>Não ignorar o risco; concentre-se no trabalho;</li>
+                    <li>Não brincar com equipamentos;</li>
+                    <li>Não utilizar adornos (brincos, pulseiras, relógios, anéis);</li>
+                    <li>Não utilizar aparelhos sonoros com ou sem fone;</li>
+                    <li>Não usar celular durante execução das atividades;</li>
+                    <li>Não improvisar ferramentas;</li>
+                    <li>Não usar uniforme de outra empresa;</li>
+                    <li>Não modificar o uniforme fornecido;</li>
+                    <li>Não fazer refeições fora do refeitório.</li>
+                </ul>
+
+                <p><strong>6. Procedimentos em Caso de Acidentes:</strong><br>
+                - Comunicar imediatamente a chefia sobre a ocorrência, mesmo que leve.</p>
+
+                <p><strong>7. Recomendações Específicas:</strong><br>
+                - Para atividade fora da rotina normal, consultar chefia para novas instruções.</p>
+
+                <p><strong>8. Recomendações Gerais:</strong></p>
+                <ul>
+                    <li>Antes de iniciar, inspecione seu local de trabalho;</li>
+                    <li>Lave as mãos antes das refeições;</li>
+                    <li>Transporte manual: utilize técnicas de levantamento (pernas flexionadas, coluna reta);</li>
+                    <li>Informe a chefia sobre qualquer alteração que interfira na segurança;</li>
+                    <li>Hidrate-se constantemente;</li>
+                    <li>Concentre-se no trabalho, não ignore o risco;</li>
+                    <li>Reutilize, recicle ou descarte corretamente os materiais;</li>
+                    <li>Atente às sinalizações de segurança;</li>
+                    <li>Trabalhe com atenção, evite distrações;</li>
+                    <li>Utilize os EPI's apenas para a finalidade a que se destinam e zele por sua conservação;</li>
+                    <li>Obedeça a todas as recomendações de segurança, inclusive esta OS;</li>
+                    <li>Elimine ou comunique qualquer possibilidade de acidente;</li>
+                    <li>Não opere máquinas sem treinamento.</li>
+                </ul>
+
+                <p><strong>9. Medidas para Eliminar ou Neutralizar Condições Inseguras:</strong></p>
+                <ul>
+                    <li>Usar EPI's corretamente e mantê-los conservados;</li>
+                    <li>Utilizar corretamente os equipamentos de proteção coletiva;</li>
+                    <li>Obedecer às normas administrativas e de organização do trabalho.</li>
+                </ul>
+
+                <p><strong>10. Penalidades:</strong><br>
+                O não cumprimento desta OS sujeita o trabalhador a advertência, suspensão ou demissão por justa causa (Art. 158 § único e Art. 482 da CLT).</p>
+
+                <p><strong>11. Responsabilidade do Empregador:</strong><br>
+                Cumprir e fazer cumprir todos os itens desta OS, dando condições necessárias e treinamentos.</p>
+
+                <p><strong>12. Cabe ao Empregado:</strong></p>
+                <ul>
+                    <li>Cumprir disposições legais e regulamentares;</li>
+                    <li>Usar e zelar pelos EPI's fornecidos;</li>
+                    <li>Submeter-se a exames médicos (NR-7);</li>
+                    <li>Colaborar na aplicação das normas.</li>
+                </ul>
+
+                <p><strong>13. Ato faltoso:</strong> Recusa injustificada ao cumprimento do disposto pode gerar demissão por justa causa (Art. 154, CLT).</p>
+
+                <p><strong>14. EPI's de Uso Obrigatório:</strong><br>${dados.epis}</p>
+
+                <p><strong>15. Treinamentos Obrigatórios:</strong><br>${dados.treinamentos}</p>
+
+                ${obs ? `<p><strong>Observações:</strong><br>${obs}</p>` : ''}
+
+                <div style="margin-top: 20px;">
+                    <p><strong>Declaração:</strong><br>
+                    Declaro que recebi da Empresa <strong>${empresa}</strong> as Instruções de Segurança e Higiene contidas neste documento, comprometendo-me a cumpri-las. Estou ciente de que a empresa fornece todos os EPI's gratuitamente e que o não cumprimento sujeita-me a penalidades previstas na CLT.</p>
+                </div>
+
+                <div style="margin-top: 15px;">
+                    <p><strong>${local}, ${dataOs}</strong></p>
+                </div>
+
+                <div class="signature-area">
+                    <div>
+                        <div class="signature-line"></div>
+                        <p style="text-align: center;">Colaborador</p>
+                    </div>
+                    <div>
+                        <div class="signature-line"></div>
+                        <p style="text-align: center;">Departamento de Segurança do Trabalho</p>
+                    </div>
+                </div>
+                <div style="margin-top: 5px; font-size: 11px; text-align: center; border-top: 1px solid #ccc; padding-top: 8px;">
+                    Documento elaborado conforme NR-01 - Válido por tempo indeterminado.
+                </div>
             </div>
-        </header>
+        </div>
+        `;
 
-        <main class="content">
-            <section class="page-section active" id="page-resumo">
-                <div class="cards-row" id="resumoCards"></div>
-                <div class="filters-bar" id="resumoFilters"></div>
-                <div class="charts-grid" id="resumoCharts"></div>
-                <div class="table-container"><div class="table-scroll" id="resumoTable"></div></div>
-            </section>
-            <section class="page-section" id="page-debitos">
-                <div class="cards-row" id="debitosCards"></div>
-                <div class="filters-bar" id="debitosFilters"></div>
-                <div class="charts-grid" id="debitosCharts"></div>
-                <div class="calendar-container" id="debitosCalendar"></div>
-                <div class="table-container"><div class="table-scroll" id="debitosTable"></div></div>
-            </section>
-            <section class="page-section" id="page-creditos">
-                <div class="cards-row" id="creditosCards"></div>
-                <div class="filters-bar" id="creditosFilters"></div>
-                <div class="charts-grid" id="creditosCharts"></div>
-                <div class="calendar-container" id="creditosCalendar"></div>
-                <div class="table-container"><div class="table-scroll" id="creditosTable"></div></div>
-            </section>
-            <section class="page-section" id="page-dre">
-                <div class="cards-row" id="dreCards"></div>
-                <div class="filters-bar" id="dreFilters"></div>
-                <div class="charts-grid" id="dreCharts"></div>
-                <div class="table-container"><div class="table-scroll" id="dreTable"></div></div>
-            </section>
-            <section class="page-section" id="page-tendencias">
-                <div class="cards-row" id="tendenciasCards"></div>
-                <div class="charts-grid" id="tendenciasCharts"></div>
-            </section>
-            <section class="page-section" id="page-bancos">
-                <div class="cards-row" id="bancosCards"></div>
-                <div class="filters-bar" id="bancosFilters"></div>
-                <div class="charts-grid" id="bancosCharts"></div>
-            </section>
-            <section class="page-section" id="page-pessoas">
-                <div class="cards-row" id="pessoasCards"></div>
-                <div class="filters-bar" id="pessoasFilters"></div>
-                <div class="charts-grid" id="pessoasCharts"></div>
-            </section>
-            <section class="page-section" id="page-formas">
-                <div class="cards-row" id="formasCards"></div>
-                <div class="filters-bar" id="formasFilters"></div>
-                <div class="charts-grid" id="formasCharts"></div>
-            </section>
-            <section class="page-section" id="page-inadimplencia">
-                <div class="cards-row" id="inadimplenciaCards"></div>
-                <div class="filters-bar" id="inadimplenciaFilters"></div>
-                <div class="table-container"><div class="table-scroll" id="inadimplenciaTable"></div></div>
-            </section>
-            <section class="page-section" id="page-calendario">
-                <div class="cards-row" id="calendarioCards"></div>
-                <div class="calendar-container" id="calendarioGeral"></div>
-                <div class="table-container"><div class="table-scroll" id="calendarioTable"></div></div>
-            </section>
-            <section class="page-section" id="page-comparativo">
-                <div class="cards-row" id="comparativoCards"></div>
-                <div class="filters-bar" id="comparativoFilters"></div>
-                <div class="table-container"><div class="table-scroll" id="comparativoTable"></div></div>
-            </section>
-            <section class="page-section" id="page-analise">
-                <div class="cards-row" id="analiseCards"></div>
-                <div class="filters-bar" id="analiseFilters"></div>
-                <div class="charts-grid" id="analiseCharts"></div>
-                <div class="table-container"><div class="table-scroll" id="analiseTable"></div></div>
-            </section>
-        </main>
-    </div>
+        document.getElementById('os-preview').innerHTML = html;
+    }
 
-    <div class="toast-container" id="toastContainer"></div>
-    <div class="loading-overlay" id="loadingOverlay">
-        <div class="spinner"></div>
-        <div class="loading-text">Carregando dados...</div>
-    </div>
+    // ============================================================
+    // GERAR PDF
+    // ============================================================
+    function gerarPDF() {
+        const element = document.getElementById('os-preview');
+        if (!element.innerHTML.trim()) {
+            alert('Primeiro atualize a visualização preenchendo os dados.');
+            return;
+        }
+        // Ajustar largura para o PDF
+        const opt = {
+            margin:        [0.5, 0.5, 0.5, 0.5], // top, right, bottom, left (em polegadas)
+            filename:     `OS_${document.getElementById('funcao').value}_${document.getElementById('nome').value || 'funcionario'}.pdf`,
+            image:        { type: 'jpeg', quality: 0.98 },
+            html2canvas:  { scale: 2, letterRendering: true, useCORS: true, logging: false },
+            jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' }
+        };
+        html2pdf().set(opt).from(element).save();
+    }
 
-    <script>
-        (function() {
-            // ===================== UTILITÁRIOS =====================
-            const $ = (sel, ctx = document) => ctx.querySelector(sel);
-            const $$ = (sel, ctx = document) => [...ctx.querySelectorAll(sel)];
-
-            function formatCurrency(val) { return val.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }); }
-            function formatCurrencyCompact(val) {
-                if (Math.abs(val) >= 1e6) return 'R$ ' + (val / 1e6).toFixed(1) + 'M';
-                if (Math.abs(val) >= 1e3) return 'R$ ' + (val / 1e3).toFixed(1) + 'k';
-                return formatCurrency(val);
-            }
-            function formatDateBR(dateObj) { return dateObj && !isNaN(dateObj.getTime()) ? dateObj.toLocaleDateString('pt-BR') : '-'; }
-
-            function parseCSV(text) {
-                const rows = [];
-                let row = [], field = '', inQuotes = false;
-                for (let i = 0; i < text.length; i++) {
-                    const c = text[i];
-                    if (inQuotes) {
-                        if (c === '"') {
-                            if (i + 1 < text.length && text[i + 1] === '"') { field += '"'; i++; }
-                            else inQuotes = false;
-                        } else field += c;
-                    } else {
-                        if (c === '"') inQuotes = true;
-                        else if (c === ',') { row.push(field); field = ''; }
-                        else if (c === '\n' || c === '\r') {
-                            if (c === '\r' && i + 1 < text.length && text[i + 1] === '\n') i++;
-                            row.push(field); field = '';
-                            if (row.length > 1 || (row.length === 1 && row[0].trim() !== '')) rows.push(row);
-                            row = [];
-                        } else field += c;
-                    }
-                }
-                if (field !== '' || row.length > 0) {
-                    row.push(field);
-                    if (row.length > 1 || (row.length === 1 && row[0].trim() !== '')) rows.push(row);
-                }
-                return rows;
-            }
-
-            function normalizeHeader(h) {
-                return String(h).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]/g, '').trim();
-            }
-            function parseValueBR(val) {
-                if (val == null) return 0;
-                let s = String(val).trim();
-                if (!s) return 0;
-                s = s.replace(/R\$/gi, '').trim();
-                let negative = s.startsWith('-');
-                if (negative) s = s.substring(1);
-                if (s.startsWith('(') && s.endsWith(')')) { negative = true; s = s.substring(1, s.length - 1); }
-                if (s.includes(',')) s = s.replace(/\./g, '').replace(',', '.');
-                else {
-                    const dotCount = (s.match(/\./g) || []).length;
-                    if (dotCount === 1) { const parts = s.split('.'); s = parts[0] + '.' + parts[1]; }
-                    else if (dotCount > 1) s = s.replace(/\./g, '');
-                }
-                let num = parseFloat(s);
-                if (isNaN(num)) num = 0;
-                return negative ? -num : num;
-            }
-            function parseDateBR(val) {
-                if (val == null) return null;
-                let s = String(val).trim();
-                if (!s) return null;
-                let m = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{2,4})$/);
-                if (m) { let d = parseInt(m[1]), mo = parseInt(m[2]) - 1, y = parseInt(m[3]); if (y < 100) y += 2000; return new Date(y, mo, d); }
-                m = s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/);
-                if (m) return new Date(parseInt(m[1]), parseInt(m[2]) - 1, parseInt(m[3]));
-                let d = new Date(s);
-                return !isNaN(d.getTime()) ? d : null;
-            }
-            function normalizeStatus(s) {
-                s = String(s).toLowerCase().trim();
-                if (['true','pago','paga','quitado','ok','concluido','concluído'].includes(s)) return 'Pago';
-                if (['false','pendente','vencido','atraso','atrasado','nao pago','não pago'].includes(s)) return 'Pendente';
-                return s || 'Pendente';
-            }
-            function getDaysLate(dateObj, status) {
-                if (!dateObj) return 0;
-                if (normalizeStatus(status) === 'Pago') return 0;
-                const now = new Date();
-                return Math.max(0, Math.floor((now.getTime() - dateObj.getTime()) / 86400000));
-            }
-
-            // ===================== CONSTANTES E ESTADO =====================
-            const SHEET_BASE = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSWlUNgP29Erp8Rh5AZPg430wul7T9IwPBPgozPQpO2ig9g8gpJoTn4JNfcKAbBSNH59VngkPE4A7dF/pub';
-            const DEBITOS_GID = '1145670122';
-            const CREDITOS_GID = '902301839';
-            let allTransactions = [], debitsData = [], creditsData = [], dataLoaded = false;
-
-            const state = {
-                currentPage: 'resumo',
-                theme: localStorage.getItem('dash_theme') || 'light',
-                sidebarCollapsed: localStorage.getItem('dash_sidebar') === 'collapsed',
-                mobileSidebarOpen: false,
-                charts: {}, // { key: chartInstance }
-                filters: {
-                    resumo: { categoria:'', pessoa:'', status:'', forma:'', banco:'', ano:'', mes:'', dia:'' },
-                    debitos: { categoria:'', pessoa:'', status:'', forma:'', banco:'', ano:'', mes:'', dia:'' },
-                    creditos: { categoria:'', pessoa:'', status:'', forma:'', banco:'', ano:'', mes:'', dia:'' },
-                    dre: { ano:'', mes:'' },
-                    bancos: { ano:'', mes:'' },
-                    pessoas: { ano:'', mes:'' },
-                    formas: { ano:'', mes:'' },
-                    inadimplencia: { tipo:'todos', ano:'', mes:'' },
-                    comparativo: { ano:'' },
-                    analise: { ano:'' }
-                },
-                sort: { tableId:null, column:null, direction:'asc' },
-                calendarMonth: { year:new Date().getFullYear(), month:new Date().getMonth() },
-                calendarSelectedDate: null,
-                debitosCalendarMonth: { year:new Date().getFullYear(), month:new Date().getMonth() },
-                creditosCalendarMonth: { year:new Date().getFullYear(), month:new Date().getMonth() }
-            };
-
-            // ===================== CARREGAMENTO DE DADOS =====================
-            async function fetchCSV(gid) {
-                const url = `${SHEET_BASE}?gid=${gid}&single=true&output=csv`;
-                const resp = await fetch(url, { cache: 'no-store' });
-                if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
-                const text = await resp.text();
-                if (text.trim().startsWith('<!DOCTYPE') || text.trim().startsWith('<html')) throw new Error('Resposta inválida (HTML)');
-                return text;
-            }
-
-            function processCSV(csvText, tipo) {
-                const rows = parseCSV(csvText);
-                if (rows.length < 2) return [];
-                const headers = rows[0].map(normalizeHeader);
-                const dataIdx = headers.findIndex(h => h.includes('data') || h.includes('date'));
-                const descIdx = headers.findIndex(h => h.includes('descricao') || h.includes('desc') || h.includes('historico'));
-                const catIdx = headers.findIndex(h => h.includes('categoria') || h.includes('cat') || h.includes('tipo'));
-                const valIdx = headers.findIndex(h => h.includes('valor') || h.includes('value') || h.includes('amount') || h.includes('preco'));
-                const statusIdx = headers.findIndex(h => h.includes('status') || h.includes('situacao') || h.includes('pago'));
-                const formaIdx = headers.findIndex(h => h.includes('forma') || h.includes('pagamento') || h.includes('metodo'));
-                const bancoIdx = headers.findIndex(h => h.includes('banco') || h.includes('bank') || h.includes('instituicao'));
-                const pessoaIdx = headers.findIndex(h => h.includes('pessoa') || h.includes('nome') || h.includes('cliente') || h.includes('fornecedor'));
-                if (dataIdx === -1 || valIdx === -1) return [];
-
-                const result = [];
-                for (let i = 1; i < rows.length; i++) {
-                    const r = rows[i];
-                    if (!r || r.length === 0 || r.every(c => !c || String(c).trim() === '')) continue;
-                    const rawData = dataIdx >= 0 ? r[dataIdx] : '';
-                    const dateObj = parseDateBR(rawData);
-                    const rawVal = valIdx >= 0 ? r[valIdx] : '0';
-                    const valNum = parseValueBR(rawVal);
-                    const rawStatus = statusIdx >= 0 ? r[statusIdx] : 'false';
-                    const statusNorm = normalizeStatus(rawStatus);
-                    result.push({
-                        data: rawData,
-                        dataOriginal: rawData,
-                        dateObj: dateObj,
-                        descricao: descIdx >= 0 ? (r[descIdx] || '') : '',
-                        categoria: catIdx >= 0 ? (r[catIdx] || 'Sem categoria') : 'Sem categoria',
-                        valor: valNum,
-                        valorAbs: Math.abs(valNum),
-                        status: statusNorm,
-                        statusRaw: rawStatus,
-                        formaPagamento: formaIdx >= 0 ? (r[formaIdx] || 'Não informado') : 'Não informado',
-                        banco: bancoIdx >= 0 ? (r[bancoIdx] || 'Não informado') : 'Não informado',
-                        pessoa: pessoaIdx >= 0 ? (r[pessoaIdx] || 'Não informado') : 'Não informado',
-                        tipo: tipo,
-                        dia: dateObj ? dateObj.getDate() : 0,
-                        mes: dateObj ? dateObj.getMonth() : 0,
-                        mesLabel: dateObj ? dateObj.toLocaleDateString('pt-BR', { month: 'long' }) : '',
-                        ano: dateObj ? dateObj.getFullYear() : 0,
-                        daysLate: getDaysLate(dateObj, statusNorm)
-                    });
-                }
-                return result;
-            }
-
-            async function loadData(showToast = true) {
-                const overlay = $('#loadingOverlay');
-                overlay.classList.remove('hidden');
-                try {
-                    const [debCsv, credCsv] = await Promise.all([fetchCSV(DEBITOS_GID), fetchCSV(CREDITOS_GID)]);
-                    debitsData = processCSV(debCsv, 'debito');
-                    creditsData = processCSV(credCsv, 'credito');
-                    allTransactions = [...debitsData, ...creditsData];
-                    dataLoaded = true;
-                    renderCurrentPage();
-                    if (showToast) showToast('Dados carregados com sucesso!', 'success');
-                } catch (err) {
-                    console.error('Erro ao carregar:', err);
-                    if (showToast) showToast('Erro ao carregar: ' + err.message, 'error');
-                    // Garante que a UI não fique presa
-                    dataLoaded = true;
-                    renderCurrentPage();
-                } finally {
-                    setTimeout(() => overlay.classList.add('hidden'), 300);
-                }
-            }
-
-            // ===================== FUNÇÕES AUXILIARES DE DADOS =====================
-            function getUniqueValues(key, data) {
-                const set = new Set();
-                data.forEach(t => { if (t[key]) set.add(t[key]); });
-                return [...set].sort((a, b) => String(a).localeCompare(String(b), 'pt-BR'));
-            }
-            function getYears(data) {
-                const years = new Set();
-                data.forEach(t => { if (t.ano) years.add(t.ano); });
-                const arr = [...years].sort((a, b) => b - a);
-                if (!arr.length) arr.push(new Date().getFullYear());
-                return arr;
-            }
-            function getMonthLabel(m) { return ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'][m] || ''; }
-            function filterTransactions(data, f) {
-                return data.filter(t =>
-                    (!f.categoria || t.categoria === f.categoria) &&
-                    (!f.pessoa || t.pessoa === f.pessoa) &&
-                    (!f.status || t.status === f.status) &&
-                    (!f.forma || t.formaPagamento === f.forma) &&
-                    (!f.banco || t.banco === f.banco) &&
-                    (!f.ano || t.ano === parseInt(f.ano)) &&
-                    (!f.mes || t.mes === parseInt(f.mes)) &&
-                    (!f.dia || t.dia === parseInt(f.dia))
-                );
-            }
-            function getFilteredData(page) {
-                const f = state.filters[page] || {};
-                if (page === 'resumo') return filterTransactions(allTransactions, f);
-                if (page === 'debitos') return filterTransactions(debitsData, f);
-                if (page === 'creditos') return filterTransactions(creditsData, f);
-                if (page === 'inadimplencia') {
-                    const base = f.tipo === 'credito' ? creditsData : f.tipo === 'debito' ? debitsData : allTransactions;
-                    return filterTransactions(base, f);
-                }
-                return allTransactions;
-            }
-            function sumByType(data, tipo) { return data.filter(t => t.tipo === tipo).reduce((s, t) => s + t.valorAbs, 0); }
-            function getMonthKey(t) { return `${t.ano}-${String(t.mes + 1).padStart(2, '0')}`; }
-            function groupByMonth(data, tipo) {
-                const map = {};
-                data.filter(t => t.tipo === tipo || !tipo).forEach(t => {
-                    const key = getMonthKey(t);
-                    if (!map[key]) map[key] = { key, ano: t.ano, mes: t.mes, total: 0, count: 0 };
-                    map[key].total += t.valorAbs;
-                    map[key].count++;
-                });
-                return Object.values(map).sort((a, b) => a.key.localeCompare(b.key));
-            }
-            function groupByYear(data, tipo) {
-                const map = {};
-                data.filter(t => t.tipo === tipo || !tipo).forEach(t => {
-                    const key = String(t.ano);
-                    if (!map[key]) map[key] = { ano: t.ano, total: 0, count: 0 };
-                    map[key].total += t.valorAbs;
-                    map[key].count++;
-                });
-                return Object.values(map).sort((a, b) => a.ano - b.ano);
-            }
-            function groupByCategory(data, tipo) {
-                const map = {};
-                data.filter(t => t.tipo === tipo).forEach(t => {
-                    const key = t.categoria;
-                    if (!map[key]) map[key] = { categoria: key, total: 0, count: 0 };
-                    map[key].total += t.valorAbs;
-                    map[key].count++;
-                });
-                return Object.values(map).sort((a, b) => b.total - a.total);
-            }
-            function groupByBanco(data, tipo) {
-                const map = {};
-                data.filter(t => t.tipo === tipo).forEach(t => {
-                    const key = t.banco;
-                    if (!map[key]) map[key] = { banco: key, total: 0, count: 0 };
-                    map[key].total += t.valorAbs;
-                    map[key].count++;
-                });
-                return Object.values(map).sort((a, b) => b.total - a.total);
-            }
-            function groupByPessoa(data, tipo) {
-                const map = {};
-                data.filter(t => t.tipo === tipo).forEach(t => {
-                    const key = t.pessoa;
-                    if (!map[key]) map[key] = { pessoa: key, total: 0, count: 0 };
-                    map[key].total += t.valorAbs;
-                    map[key].count++;
-                });
-                return Object.values(map).sort((a, b) => b.total - a.total);
-            }
-            function groupByForma(data, tipo) {
-                const map = {};
-                data.filter(t => t.tipo === tipo).forEach(t => {
-                    const key = t.formaPagamento;
-                    if (!map[key]) map[key] = { forma: key, total: 0, count: 0 };
-                    map[key].total += t.valorAbs;
-                    map[key].count++;
-                });
-                return Object.values(map).sort((a, b) => b.total - a.total);
-            }
-            function getTransactionsForDay(data, y, m, d) {
-                return data.filter(t => t.ano === y && t.mes === m && t.dia === d);
-            }
-
-            // ===================== RENDERIZAÇÃO =====================
-            function renderCurrentPage() {
-                if (!dataLoaded) return;
-                const page = state.currentPage;
-                // Atualiza título
-                const titles = {
-                    resumo: 'Resumo Geral', debitos: 'Débitos', creditos: 'Créditos', dre: 'D.R.E.',
-                    tendencias: 'Tendências', bancos: 'Bancos', pessoas: 'Pessoas', formas: 'Formas de Pagamento',
-                    inadimplencia: 'Inadimplência', calendario: 'Calendário Geral', comparativo: 'Comparativo Anual',
-                    analise: 'Análise Mensal'
-                };
-                $('#headerTitle').textContent = titles[page] || page;
-                // Ativa seção
-                $$('.page-section').forEach(s => s.classList.remove('active'));
-                const section = $('#page-' + page);
-                if (section) section.classList.add('active');
-                // Renderiza a página
-                switch (page) {
-                    case 'resumo': renderResumo(); break;
-                    case 'debitos': renderDebitos(); break;
-                    case 'creditos': renderCreditos(); break;
-                    case 'dre': renderDRE(); break;
-                    case 'tendencias': renderTendencias(); break;
-                    case 'bancos': renderBancos(); break;
-                    case 'pessoas': renderPessoas(); break;
-                    case 'formas': renderFormas(); break;
-                    case 'inadimplencia': renderInadimplencia(); break;
-                    case 'calendario': renderCalendario(); break;
-                    case 'comparativo': renderComparativo(); break;
-                    case 'analise': renderAnalise(); break;
-                }
-                // Atualiza filtros
-                updateFilterOptions();
-                // Atualiza classe ativa no menu
-                $$('.nav-item').forEach(n => n.classList.toggle('active', n.dataset.page === page));
-            }
-
-            function updateFilterOptions() {
-                // Atualiza os options dos selects com base nos dados disponíveis
-                // Isso é chamado após cada renderização
-                const pages = ['resumo', 'debitos', 'creditos', 'dre', 'bancos', 'pessoas', 'formas', 'inadimplencia', 'comparativo', 'analise'];
-                pages.forEach(page => {
-                    const container = $('#' + page + 'Filters');
-                    if (!container) return;
-                    const data = page === 'debitos' ? debitsData : page === 'creditos' ? creditsData : allTransactions;
-                    // Atualiza cada select que existe
-                    $$('select', container).forEach(sel => {
-                        const filterKey = sel.dataset.filter;
-                        const currentVal = sel.value;
-                        let options = [];
-                        if (filterKey === 'ano') options = getYears(data).map(y => String(y));
-                        else if (filterKey === 'mes') options = Array.from({length:12}, (_,i) => String(i));
-                        else options = getUniqueValues(filterKey, data);
-                        const placeholder = sel.dataset.placeholder || 'Todos';
-                        sel.innerHTML = `<option value="">${placeholder}</option>` + options.map(o => `<option value="${o}">${filterKey === 'mes' ? getMonthLabel(parseInt(o)) : o}</option>`).join('');
-                        sel.value = currentVal || '';
-                    });
-                });
-            }
-
-            function buildFiltersHTML(page, options) {
-                // options: { categorias, pessoas, status, formas, bancos, anos, meses }
-                const f = state.filters[page] || {};
-                return `
-                    <div class="filter-group">
-                        <label>Categoria</label>
-                        <select data-filter="categoria" data-placeholder="Todas">
-                            <option value="">Todas</option>
-                            ${options.categorias.map(c => `<option value="${c}">${c}</option>`).join('')}
-                        </select>
-                    </div>
-                    <div class="filter-group">
-                        <label>Pessoa</label>
-                        <select data-filter="pessoa" data-placeholder="Todas">
-                            <option value="">Todas</option>
-                            ${options.pessoas.map(p => `<option value="${p}">${p}</option>`).join('')}
-                        </select>
-                    </div>
-                    <div class="filter-group">
-                        <label>Status</label>
-                        <select data-filter="status" data-placeholder="Todos">
-                            <option value="">Todos</option>
-                            <option value="Pago">Pago</option>
-                            <option value="Pendente">Pendente</option>
-                        </select>
-                    </div>
-                    <div class="filter-group">
-                        <label>Forma Pagamento</label>
-                        <select data-filter="forma" data-placeholder="Todas">
-                            <option value="">Todas</option>
-                            ${options.formas.map(fr => `<option value="${fr}">${fr}</option>`).join('')}
-                        </select>
-                    </div>
-                    <div class="filter-group">
-                        <label>Banco</label>
-                        <select data-filter="banco" data-placeholder="Todos">
-                            <option value="">Todos</option>
-                            ${options.bancos.map(b => `<option value="${b}">${b}</option>`).join('')}
-                        </select>
-                    </div>
-                    <div class="filter-group">
-                        <label>Ano</label>
-                        <select data-filter="ano" data-placeholder="Todos">
-                            <option value="">Todos</option>
-                            ${options.anos.map(a => `<option value="${a}">${a}</option>`).join('')}
-                        </select>
-                    </div>
-                    <div class="filter-group">
-                        <label>Mês</label>
-                        <select data-filter="mes" data-placeholder="Todos">
-                            <option value="">Todos</option>
-                            ${Array.from({length:12}, (_,i) => `<option value="${i}">${getMonthLabel(i)}</option>`).join('')}
-                        </select>
-                    </div>
-                    <div class="filter-group">
-                        <label>Dia</label>
-                        <input type="number" data-filter="dia" min="1" max="31" placeholder="Todos">
-                    </div>
-                `;
-            }
-
-            function renderCard(iconClass, label, value, sub = '', valueClass = '') {
-                return `<div class="card">
-                    <div class="card-icon ${iconClass}">${iconClass === 'green' ? '📈' : iconClass === 'red' ? '📉' : iconClass === 'purple' ? '💡' : '💰'}</div>
-                    <div class="card-label">${label}</div>
-                    <div class="card-value ${valueClass}">${value}</div>
-                    ${sub ? `<div class="card-sub">${sub}</div>` : ''}
-                </div>`;
-            }
-
-            function renderTable(containerId, data, columns, opts = {}) {
-                const container = $('#' + containerId);
-                if (!container) return;
-                if (!data.length) {
-                    container.innerHTML = `<div class="empty-state"><div class="icon">📭</div>Nenhum registro encontrado.</div>`;
-                    return;
-                }
-                const sortedData = sortData(data, columns);
-                let html = '<table><thead><tr>';
-                columns.forEach(col => {
-                    const arrow = state.sort.tableId === containerId && state.sort.column === col.key ? (state.sort.direction === 'asc' ? '▲' : '▼') : '';
-                    html += `<th data-col="${col.key}">${col.label} <span class="sort-arrow">${arrow}</span></th>`;
-                });
-                html += '</tr></thead><tbody>';
-                sortedData.forEach(row => {
-                    const rowClass = row.tipo === 'debito' ? 'debit-row' : 'credit-row';
-                    html += `<tr class="${rowClass}">`;
-                    columns.forEach(col => {
-                        let val = col.render ? col.render(row) : row[col.key];
-                        html += `<td>${val}</td>`;
-                    });
-                    html += '</tr>';
-                });
-                html += '</tbody></table>';
-                container.innerHTML = html;
-                // Ordenação
-                $$('th', container).forEach(th => {
-                    th.addEventListener('click', () => {
-                        const colKey = th.dataset.col;
-                        if (state.sort.tableId === containerId && state.sort.column === colKey) {
-                            state.sort.direction = state.sort.direction === 'asc' ? 'desc' : 'asc';
-                        } else {
-                            state.sort.tableId = containerId;
-                            state.sort.column = colKey;
-                            state.sort.direction = 'asc';
-                        }
-                        renderCurrentPage();
-                    });
-                });
-            }
-
-            function sortData(data, columns) {
-                if (!state.sort.tableId || !state.sort.column) return data;
-                const col = columns.find(c => c.key === state.sort.column);
-                if (!col) return data;
-                const dir = state.sort.direction === 'asc' ? 1 : -1;
-                return [...data].sort((a, b) => {
-                    let va = col.value ? col.value(a) : a[col.key];
-                    let vb = col.value ? col.value(b) : b[col.key];
-                    if (typeof va === 'string') va = va.toLowerCase();
-                    if (typeof vb === 'string') vb = vb.toLowerCase();
-                    if (va < vb) return -1 * dir;
-                    if (va > vb) return 1 * dir;
-                    return 0;
-                });
-            }
-
-            function createOrUpdateChart(key, config) {
-                if (state.charts[key]) {
-                    state.charts[key].data = config.data;
-                    state.charts[key].options = config.options;
-                    state.charts[key].update();
-                } else {
-                    const ctx = $(config.ctx);
-                    if (!ctx) return;
-                    state.charts[key] = new Chart(ctx, config);
-                }
-            }
-
-            function destroyChartsForPage(page) {
-                Object.keys(state.charts).forEach(key => {
-                    if (key.startsWith(page + '-')) {
-                        state.charts[key].destroy();
-                        delete state.charts[key];
-                    }
-                });
-            }
-
-            // ===================== RENDERIZAÇÃO DE PÁGINAS ESPECÍFICAS =====================
-            function renderResumo() {
-                const data = getFilteredData('resumo');
-                const totalDebitos = sumByType(data, 'debito');
-                const totalCreditos = sumByType(data, 'credito');
-                const saldo = totalCreditos - totalDebitos;
-                const pago = data.filter(t => t.status === 'Pago');
-                const pendente = data.filter(t => t.status === 'Pendente');
-                const cardsHTML = `
-                    ${renderCard('red', 'Total Débitos', formatCurrency(totalDebitos), '', 'red')}
-                    ${renderCard('green', 'Total Créditos', formatCurrency(totalCreditos), '', 'green')}
-                    ${renderCard(saldo >= 0 ? 'green' : 'red', 'Saldo', formatCurrency(saldo), '', saldo >= 0 ? 'green' : 'red')}
-                    ${renderCard('purple', 'Pagos', formatCurrency(sumByType(pago, 'credito') + sumByType(pago, 'debito')), `${pago.length} registros`, 'purple')}
-                    ${renderCard('yellow', 'Pendentes', formatCurrency(sumByType(pendente, 'credito') + sumByType(pendente, 'debito')), `${pendente.length} registros`, 'yellow')}
-                `;
-                $('#resumoCards').innerHTML = cardsHTML;
-
-                // Filtros
-                const anos = getYears(allTransactions);
-                const categorias = getUniqueValues('categoria', allTransactions);
-                const pessoas = getUniqueValues('pessoa', allTransactions);
-                const formas = getUniqueValues('formaPagamento', allTransactions);
-                const bancos = getUniqueValues('banco', allTransactions);
-                $('#resumoFilters').innerHTML = buildFiltersHTML('resumo', { categorias, pessoas, formas, bancos, anos });
-
-                // Gráficos
-                const monthDeb = groupByMonth(data, 'debito');
-                const monthCred = groupByMonth(data, 'credito');
-                const labelsMonths = monthDeb.map(m => getMonthLabel(m.mes) + '/' + m.ano);
-                const debValues = monthDeb.map(m => m.total);
-                const credValues = monthCred.map(m => m.total);
-                const catDeb = groupByCategory(data, 'debito');
-                const catCred = groupByCategory(data, 'credito');
-                $('#resumoCharts').innerHTML = `
-                    <div class="chart-card"><div class="chart-title">Débitos vs Créditos por Mês</div><canvas id="resumo-line"></canvas></div>
-                    <div class="chart-card"><div class="chart-title">Débitos por Categoria</div><canvas id="resumo-pie-deb"></canvas></div>
-                    <div class="chart-card"><div class="chart-title">Créditos por Categoria</div><canvas id="resumo-pie-cred"></canvas></div>
-                `;
-                if (window.Chart) {
-                    const lineCtx = $('#resumo-line');
-                    if (lineCtx) {
-                        createOrUpdateChart('resumo-line', {
-                            type: 'line',
-                            ctx: lineCtx,
-                            data: {
-                                labels: labelsMonths,
-                                datasets: [
-                                    { label: 'Débitos', data: debValues, borderColor: '#ef4444', backgroundColor: 'rgba(239,68,68,0.2)', fill: true },
-                                    { label: 'Créditos', data: credValues, borderColor: '#10b981', backgroundColor: 'rgba(16,185,129,0.2)', fill: true }
-                                ]
-                            },
-                            options: { responsive: true, maintainAspectRatio: false }
-                        });
-                    }
-                    const pieDebCtx = $('#resumo-pie-deb');
-                    if (pieDebCtx) {
-                        createOrUpdateChart('resumo-pie-deb', {
-                            type: 'pie',
-                            ctx: pieDebCtx,
-                            data: {
-                                labels: catDeb.map(c => c.categoria),
-                                datasets: [{ data: catDeb.map(c => c.total), backgroundColor: ['#ef4444','#f97316','#f59e0b','#dc2626','#b91c1c'] }]
-                            },
-                            options: { responsive: true, maintainAspectRatio: false }
-                        });
-                    }
-                    const pieCredCtx = $('#resumo-pie-cred');
-                    if (pieCredCtx) {
-                        createOrUpdateChart('resumo-pie-cred', {
-                            type: 'pie',
-                            ctx: pieCredCtx,
-                            data: {
-                                labels: catCred.map(c => c.categoria),
-                                datasets: [{ data: catCred.map(c => c.total), backgroundColor: ['#10b981','#34d399','#059669','#6ee7b7','#a7f3d0'] }]
-                            },
-                            options: { responsive: true, maintainAspectRatio: false }
-                        });
-                    }
-                } else {
-                    console.warn('Chart.js não carregado');
-                }
-
-                // Tabela
-                renderTable('resumoTable', data, [
-                    { key: 'data', label: 'Data', render: t => formatDateBR(t.dateObj) },
-                    { key: 'descricao', label: 'Descrição' },
-                    { key: 'categoria', label: 'Categoria' },
-                    { key: 'pessoa', label: 'Pessoa' },
-                    { key: 'banco', label: 'Banco' },
-                    { key: 'formaPagamento', label: 'Forma' },
-                    { key: 'status', label: 'Status', render: t => `<span class="badge ${t.status === 'Pago' ? 'badge-green' : 'badge-red'}">${t.status}</span>` },
-                    { key: 'valorAbs', label: 'Valor', value: t => t.valorAbs, render: t => `<strong class="${t.tipo === 'debito' ? 'debit-row' : 'credit-row'}">${formatCurrency(t.valorAbs)}</strong>` }
-                ]);
-            }
-
-            function renderDebitos() {
-                const data = getFilteredData('debitos');
-                const total = sumByType(data, 'debito');
-                const pago = data.filter(t => t.status === 'Pago').reduce((s, t) => s + t.valorAbs, 0);
-                const pendente = data.filter(t => t.status === 'Pendente').reduce((s, t) => s + t.valorAbs, 0);
-                $('#debitosCards').innerHTML = `
-                    ${renderCard('red', 'Total Débitos', formatCurrency(total), '', 'red')}
-                    ${renderCard('green', 'Pagos', formatCurrency(pago), 'débitos pagos', 'green')}
-                    ${renderCard('yellow', 'Pendentes', formatCurrency(pendente), 'débitos pendentes', 'yellow')}
-                    ${renderCard('purple', 'Registros', data.length, 'débitos', 'purple')}
-                `;
-                const anos = getYears(debitsData);
-                const categorias = getUniqueValues('categoria', debitsData);
-                const pessoas = getUniqueValues('pessoa', debitsData);
-                const formas = getUniqueValues('formaPagamento', debitsData);
-                const bancos = getUniqueValues('banco', debitsData);
-                $('#debitosFilters').innerHTML = buildFiltersHTML('debitos', { categorias, pessoas, formas, bancos, anos });
-                // Gráficos
-                const monthDeb = groupByMonth(data, 'debito');
-                const catDeb = groupByCategory(data, 'debito');
-                $('#debitosCharts').innerHTML = `
-                    <div class="chart-card"><div class="chart-title">Evolução dos Débitos</div><canvas id="debitos-bar"></canvas></div>
-                    <div class="chart-card"><div class="chart-title">Débitos por Categoria</div><canvas id="debitos-pie"></canvas></div>
-                `;
-                if (window.Chart) {
-                    createOrUpdateChart('debitos-bar', {
-                        type: 'bar', ctx: $('#debitos-bar'),
-                        data: { labels: monthDeb.map(m => getMonthLabel(m.mes) + '/' + m.ano), datasets: [{ label: 'Débitos', data: monthDeb.map(m => m.total), backgroundColor: '#ef4444' }] },
-                        options: { responsive: true, maintainAspectRatio: false }
-                    });
-                    createOrUpdateChart('debitos-pie', {
-                        type: 'pie', ctx: $('#debitos-pie'),
-                        data: { labels: catDeb.map(c => c.categoria), datasets: [{ data: catDeb.map(c => c.total), backgroundColor: ['#ef4444','#f97316','#f59e0b','#dc2626','#b91c1c'] }] },
-                        options: { responsive: true, maintainAspectRatio: false }
-                    });
-                }
-                // Calendário de débitos
-                renderCalendar('debitosCalendar', data, 'debito', state.debitosCalendarMonth);
-                // Tabela
-                renderTable('debitosTable', data, [
-                    { key: 'data', label: 'Data', render: t => formatDateBR(t.dateObj) },
-                    { key: 'descricao', label: 'Descrição' },
-                    { key: 'categoria', label: 'Categoria' },
-                    { key: 'pessoa', label: 'Pessoa' },
-                    { key: 'banco', label: 'Banco' },
-                    { key: 'formaPagamento', label: 'Forma' },
-                    { key: 'status', label: 'Status', render: t => `<span class="badge ${t.status === 'Pago' ? 'badge-green' : 'badge-red'}">${t.status}</span>` },
-                    { key: 'valorAbs', label: 'Valor', value: t => t.valorAbs, render: t => `<strong class="debit-row">${formatCurrency(t.valorAbs)}</strong>` }
-                ]);
-            }
-
-            function renderCreditos() {
-                const data = getFilteredData('creditos');
-                const total = sumByType(data, 'credito');
-                const pago = data.filter(t => t.status === 'Pago').reduce((s, t) => s + t.valorAbs, 0);
-                const pendente = data.filter(t => t.status === 'Pendente').reduce((s, t) => s + t.valorAbs, 0);
-                $('#creditosCards').innerHTML = `
-                    ${renderCard('green', 'Total Créditos', formatCurrency(total), '', 'green')}
-                    ${renderCard('green', 'Pagos', formatCurrency(pago), 'créditos pagos', 'green')}
-                    ${renderCard('yellow', 'Pendentes', formatCurrency(pendente), 'créditos pendentes', 'yellow')}
-                    ${renderCard('purple', 'Registros', data.length, 'créditos', 'purple')}
-                `;
-                const anos = getYears(creditsData);
-                const categorias = getUniqueValues('categoria', creditsData);
-                const pessoas = getUniqueValues('pessoa', creditsData);
-                const formas = getUniqueValues('formaPagamento', creditsData);
-                const bancos = getUniqueValues('banco', creditsData);
-                $('#creditosFilters').innerHTML = buildFiltersHTML('creditos', { categorias, pessoas, formas, bancos, anos });
-                const monthCred = groupByMonth(data, 'credito');
-                const catCred = groupByCategory(data, 'credito');
-                $('#creditosCharts').innerHTML = `
-                    <div class="chart-card"><div class="chart-title">Evolução dos Créditos</div><canvas id="creditos-bar"></canvas></div>
-                    <div class="chart-card"><div class="chart-title">Créditos por Categoria</div><canvas id="creditos-pie"></canvas></div>
-                `;
-                if (window.Chart) {
-                    createOrUpdateChart('creditos-bar', {
-                        type: 'bar', ctx: $('#creditos-bar'),
-                        data: { labels: monthCred.map(m => getMonthLabel(m.mes) + '/' + m.ano), datasets: [{ label: 'Créditos', data: monthCred.map(m => m.total), backgroundColor: '#10b981' }] },
-                        options: { responsive: true, maintainAspectRatio: false }
-                    });
-                    createOrUpdateChart('creditos-pie', {
-                        type: 'pie', ctx: $('#creditos-pie'),
-                        data: { labels: catCred.map(c => c.categoria), datasets: [{ data: catCred.map(c => c.total), backgroundColor: ['#10b981','#34d399','#059669','#6ee7b7','#a7f3d0'] }] },
-                        options: { responsive: true, maintainAspectRatio: false }
-                    });
-                }
-                renderCalendar('creditosCalendar', data, 'credito', state.creditosCalendarMonth);
-                renderTable('creditosTable', data, [
-                    { key: 'data', label: 'Data', render: t => formatDateBR(t.dateObj) },
-                    { key: 'descricao', label: 'Descrição' },
-                    { key: 'categoria', label: 'Categoria' },
-                    { key: 'pessoa', label: 'Pessoa' },
-                    { key: 'banco', label: 'Banco' },
-                    { key: 'formaPagamento', label: 'Forma' },
-                    { key: 'status', label: 'Status', render: t => `<span class="badge ${t.status === 'Pago' ? 'badge-green' : 'badge-red'}">${t.status}</span>` },
-                    { key: 'valorAbs', label: 'Valor', value: t => t.valorAbs, render: t => `<strong class="credit-row">${formatCurrency(t.valorAbs)}</strong>` }
-                ]);
-            }
-
-            function renderDRE() {
-                const f = state.filters.dre;
-                const data = filterTransactions(allTransactions, f);
-                const totalDeb = sumByType(data, 'debito');
-                const totalCred = sumByType(data, 'credito');
-                const lucro = totalCred - totalDeb;
-                const margem = totalCred > 0 ? (lucro / totalCred) * 100 : 0;
-                $('#dreCards').innerHTML = `
-                    ${renderCard('red', 'Receita Bruta', formatCurrency(totalCred), '', 'red')}
-                    ${renderCard('red', 'Despesas', formatCurrency(totalDeb), '', 'red')}
-                    ${renderCard(lucro >= 0 ? 'green' : 'red', 'Resultado Líquido', formatCurrency(lucro), '', lucro >= 0 ? 'green' : 'red')}
-                    ${renderCard(lucro >= 0 ? 'green' : 'red', 'Margem', margem.toFixed(2) + '%', '', lucro >= 0 ? 'green' : 'red')}
-                `;
-                const anos = getYears(allTransactions);
-                $('#dreFilters').innerHTML = `
-                    <div class="filter-group"><label>Ano</label><select data-filter="ano" data-placeholder="Todos"><option value="">Todos</option>${anos.map(a => `<option value="${a}">${a}</option>`).join('')}</select></div>
-                    <div class="filter-group"><label>Mês</label><select data-filter="mes" data-placeholder="Todos"><option value="">Todos</option>${Array.from({length:12}, (_,i) => `<option value="${i}">${getMonthLabel(i)}</option>`).join('')}</select></div>
-                `;
-                // Tabela DRÉ simplificada
-                const receitas = groupByCategory(data.filter(t => t.tipo === 'credito'), 'credito');
-                const despesas = groupByCategory(data.filter(t => t.tipo === 'debito'), 'debito');
-                let html = '<table><thead><tr><th>Descrição</th><th>Valor</th></tr></thead><tbody>';
-                html += `<tr class="credit-row"><td>Receita Total</td><td>${formatCurrency(totalCred)}</td></tr>`;
-                receitas.forEach(r => html += `<tr class="credit-row"><td>  ${r.categoria}</td><td>${formatCurrency(r.total)}</td></tr>`);
-                html += `<tr class="debit-row"><td>Despesa Total</td><td>${formatCurrency(totalDeb)}</td></tr>`;
-                despesas.forEach(d => html += `<tr class="debit-row"><td>  ${d.categoria}</td><td>${formatCurrency(d.total)}</td></tr>`);
-                html += `<tr><td><strong>Resultado Líquido</strong></td><td><strong>${formatCurrency(lucro)}</strong></td></tr></tbody></table>`;
-                $('#dreTable').innerHTML = html;
-                // Gráfico simples
-                $('#dreCharts').innerHTML = '<div class="chart-card"><div class="chart-title">Receita vs Despesa</div><canvas id="dre-bar"></canvas></div>';
-                if (window.Chart) {
-                    createOrUpdateChart('dre-bar', {
-                        type: 'bar', ctx: $('#dre-bar'),
-                        data: { labels: ['Receitas', 'Despesas', 'Lucro'], datasets: [{ label: 'Valores', data: [totalCred, totalDeb, lucro], backgroundColor: ['#10b981','#ef4444', lucro>=0?'#10b981':'#ef4444'] }] },
-                        options: { responsive: true, maintainAspectRatio: false }
-                    });
-                }
-            }
-
-            function renderTendencias() {
-                const data = allTransactions;
-                const monthData = groupByMonth(data);
-                const labels = monthData.map(m => getMonthLabel(m.mes) + '/' + m.ano);
-                const debitos = monthData.map(m => m.debitos || 0);
-                const creditos = monthData.map(m => m.creditos || 0);
-                // Preenche débitos e creditos por mês
-                const map = {};
-                allTransactions.forEach(t => {
-                    const key = getMonthKey(t);
-                    if (!map[key]) map[key] = { debitos: 0, creditos: 0 };
-                    if (t.tipo === 'debito') map[key].debitos += t.valorAbs;
-                    else map[key].creditos += t.valorAbs;
-                });
-                const sortedKeys = Object.keys(map).sort();
-                const debArr = sortedKeys.map(k => map[k].debitos);
-                const credArr = sortedKeys.map(k => map[k].creditos);
-                const labelsTend = sortedKeys.map(k => { const [ano, mes] = k.split('-'); return getMonthLabel(parseInt(mes)-1) + '/' + ano; });
-                const totalDeb = debArr.reduce((s, v) => s + v, 0);
-                const totalCred = credArr.reduce((s, v) => s + v, 0);
-                $('#tendenciasCards').innerHTML = `
-                    ${renderCard('purple', 'Média Débitos/mês', formatCurrency(totalDeb / (sortedKeys.length || 1)), '', 'purple')}
-                    ${renderCard('purple', 'Média Créditos/mês', formatCurrency(totalCred / (sortedKeys.length || 1)), '', 'purple')}
-                    ${renderCard('purple', 'Melhor Mês (Créditos)', sortedKeys.length ? getMonthLabel(parseInt(sortedKeys.reduce((best,k) => map[k].creditos > map[best].creditos ? k : best).split('-')[1])-1) : '-', '', 'purple')}
-                `;
-                $('#tendenciasCharts').innerHTML = '<div class="chart-card"><div class="chart-title">Tendência Débitos vs Créditos</div><canvas id="tendencias-line"></canvas></div>';
-                if (window.Chart) {
-                    createOrUpdateChart('tendencias-line', {
-                        type: 'line', ctx: $('#tendencias-line'),
-                        data: { labels: labelsTend, datasets: [
-                            { label: 'Débitos', data: debArr, borderColor: '#ef4444', backgroundColor: 'rgba(239,68,68,0.2)', fill: true },
-                            { label: 'Créditos', data: credArr, borderColor: '#10b981', backgroundColor: 'rgba(16,185,129,0.2)', fill: true }
-                        ]},
-                        options: { responsive: true, maintainAspectRatio: false }
-                    });
-                }
-            }
-
-            function renderBancos() {
-                const data = filterTransactions(allTransactions, state.filters.bancos);
-                const bancos = groupByBanco(data);
-                const debitosPorBanco = groupByBanco(data.filter(t => t.tipo === 'debito'), 'debito');
-                const creditosPorBanco = groupByBanco(data.filter(t => t.tipo === 'credito'), 'credito');
-                const totalDeb = debitosPorBanco.reduce((s, b) => s + b.total, 0);
-                const totalCred = creditosPorBanco.reduce((s, b) => s + b.total, 0);
-                const saldo = totalCred - totalDeb;
-                $('#bancosCards').innerHTML = `
-                    ${renderCard('red', 'Total Débitos', formatCurrency(totalDeb), '', 'red')}
-                    ${renderCard('green', 'Total Créditos', formatCurrency(totalCred), '', 'green')}
-                    ${renderCard(saldo >= 0 ? 'green' : 'red', 'Saldo', formatCurrency(saldo), '', saldo >= 0 ? 'green' : 'red')}
-                `;
-                const anos = getYears(allTransactions);
-                $('#bancosFilters').innerHTML = `
-                    <div class="filter-group"><label>Ano</label><select data-filter="ano" data-placeholder="Todos"><option value="">Todos</option>${anos.map(a => `<option value="${a}">${a}</option>`).join('')}</select></div>
-                    <div class="filter-group"><label>Mês</label><select data-filter="mes" data-placeholder="Todos"><option value="">Todos</option>${Array.from({length:12}, (_,i) => `<option value="${i}">${getMonthLabel(i)}</option>`).join('')}</select></div>
-                `;
-                $('#bancosCharts').innerHTML = '<div class="chart-card"><div class="chart-title">Distribuição por Banco</div><canvas id="bancos-pie"></canvas></div>';
-                if (window.Chart) {
-                    createOrUpdateChart('bancos-pie', {
-                        type: 'pie', ctx: $('#bancos-pie'),
-                        data: { labels: bancos.map(b => b.banco), datasets: [{ data: bancos.map(b => b.total), backgroundColor: ['#6366f1','#8b5cf6','#7c3aed','#a78bfa','#c4b5fd'] }] },
-                        options: { responsive: true, maintainAspectRatio: false }
-                    });
-                }
-            }
-
-            function renderPessoas() {
-                const data = filterTransactions(allTransactions, state.filters.pessoas);
-                const pessoas = groupByPessoa(data);
-                const totalDeb = pessoas.reduce((s, p) => s + p.total, 0);
-                $('#pessoasCards').innerHTML = `
-                    ${renderCard('purple', 'Total Movimentado', formatCurrency(totalDeb), '', 'purple')}
-                    ${renderCard('purple', 'Pessoas Envolvidas', pessoas.length, '', 'purple')}
-                `;
-                const anos = getYears(allTransactions);
-                $('#pessoasFilters').innerHTML = `
-                    <div class="filter-group"><label>Ano</label><select data-filter="ano" data-placeholder="Todos"><option value="">Todos</option>${anos.map(a => `<option value="${a}">${a}</option>`).join('')}</select></div>
-                    <div class="filter-group"><label>Mês</label><select data-filter="mes" data-placeholder="Todos"><option value="">Todos</option>${Array.from({length:12}, (_,i) => `<option value="${i}">${getMonthLabel(i)}</option>`).join('')}</select></div>
-                `;
-                $('#pessoasCharts').innerHTML = '<div class="chart-card"><div class="chart-title">Total por Pessoa</div><canvas id="pessoas-bar"></canvas></div>';
-                if (window.Chart) {
-                    createOrUpdateChart('pessoas-bar', {
-                        type: 'bar', ctx: $('#pessoas-bar'),
-                        data: { labels: pessoas.map(p => p.pessoa), datasets: [{ label: 'Total', data: pessoas.map(p => p.total), backgroundColor: '#8b5cf6' }] },
-                        options: { responsive: true, maintainAspectRatio: false }
-                    });
-                }
-            }
-
-            function renderFormas() {
-                const data = filterTransactions(allTransactions, state.filters.formas);
-                const formas = groupByForma(data);
-                const total = formas.reduce((s, f) => s + f.total, 0);
-                $('#formasCards').innerHTML = `
-                    ${renderCard('purple', 'Total Movimentado', formatCurrency(total), '', 'purple')}
-                    ${renderCard('purple', 'Formas de Pagamento', formas.length, '', 'purple')}
-                `;
-                const anos = getYears(allTransactions);
-                $('#formasFilters').innerHTML = `
-                    <div class="filter-group"><label>Ano</label><select data-filter="ano" data-placeholder="Todos"><option value="">Todos</option>${anos.map(a => `<option value="${a}">${a}</option>`).join('')}</select></div>
-                    <div class="filter-group"><label>Mês</label><select data-filter="mes" data-placeholder="Todos"><option value="">Todos</option>${Array.from({length:12}, (_,i) => `<option value="${i}">${getMonthLabel(i)}</option>`).join('')}</select></div>
-                `;
-                $('#formasCharts').innerHTML = '<div class="chart-card"><div class="chart-title">Distribuição por Forma de Pagamento</div><canvas id="formas-pie"></canvas></div>';
-                if (window.Chart) {
-                    createOrUpdateChart('formas-pie', {
-                        type: 'pie', ctx: $('#formas-pie'),
-                        data: { labels: formas.map(f => f.forma), datasets: [{ data: formas.map(f => f.total), backgroundColor: ['#6366f1','#8b5cf6','#7c3aed','#a78bfa','#c4b5fd','#ddd6fe'] }] },
-                        options: { responsive: true, maintainAspectRatio: false }
-                    });
-                }
-            }
-
-            function renderInadimplencia() {
-                const data = getFilteredData('inadimplencia');
-                const inad = data.filter(t => t.status === 'Pendente' && t.daysLate > 0);
-                const totalInad = inad.reduce((s, t) => s + t.valorAbs, 0);
-                const totalPend = data.filter(t => t.status === 'Pendente').reduce((s, t) => s + t.valorAbs, 0);
-                const taxa = totalPend > 0 ? (totalInad / totalPend) * 100 : 0;
-                $('#inadimplenciaCards').innerHTML = `
-                    ${renderCard('red', 'Valor Inadimplente', formatCurrency(totalInad), '', 'red')}
-                    ${renderCard('yellow', 'Pendentes', formatCurrency(totalPend), '', 'yellow')}
-                    ${renderCard('red', 'Taxa de Inadimplência', taxa.toFixed(2) + '%', '', 'red')}
-                    ${renderCard('purple', 'Registros Inadimplentes', inad.length, '', 'purple')}
-                `;
-                const anos = getYears(allTransactions);
-                $('#inadimplenciaFilters').innerHTML = `
-                    <div class="filter-group"><label>Tipo</label><select data-filter="tipo" data-placeholder="Todos"><option value="todos">Todos</option><option value="debito">Débitos</option><option value="credito">Créditos</option></select></div>
-                    <div class="filter-group"><label>Ano</label><select data-filter="ano" data-placeholder="Todos"><option value="">Todos</option>${anos.map(a => `<option value="${a}">${a}</option>`).join('')}</select></div>
-                    <div class="filter-group"><label>Mês</label><select data-filter="mes" data-placeholder="Todos"><option value="">Todos</option>${Array.from({length:12}, (_,i) => `<option value="${i}">${getMonthLabel(i)}</option>`).join('')}</select></div>
-                `;
-                renderTable('inadimplenciaTable', inad, [
-                    { key: 'data', label: 'Data', render: t => formatDateBR(t.dateObj) },
-                    { key: 'descricao', label: 'Descrição' },
-                    { key: 'categoria', label: 'Categoria' },
-                    { key: 'pessoa', label: 'Pessoa' },
-                    { key: 'diasAtraso', label: 'Dias Atraso', value: t => t.daysLate, render: t => `${t.daysLate} dias` },
-                    { key: 'valorAbs', label: 'Valor', render: t => `<strong>${formatCurrency(t.valorAbs)}</strong>` }
-                ]);
-            }
-
-            function renderCalendario() {
-                const data = allTransactions;
-                const totalDeb = sumByType(data, 'debito');
-                const totalCred = sumByType(data, 'credito');
-                $('#calendarioCards').innerHTML = `
-                    ${renderCard('red', 'Débitos', formatCurrency(totalDeb), '', 'red')}
-                    ${renderCard('green', 'Créditos', formatCurrency(totalCred), '', 'green')}
-                    ${renderCard('purple', 'Registros', data.length, '', 'purple')}
-                `;
-                renderCalendar('calendarioGeral', data, 'todos', state.calendarMonth);
-                // Tabela do dia selecionado
-                const sel = state.calendarSelectedDate;
-                if (sel) {
-                    const dayData = getTransactionsForDay(allTransactions, sel.year, sel.month, sel.day);
-                    renderTable('calendarioTable', dayData, [
-                        { key: 'data', label: 'Data', render: t => formatDateBR(t.dateObj) },
-                        { key: 'descricao', label: 'Descrição' },
-                        { key: 'tipo', label: 'Tipo', render: t => t.tipo === 'debito' ? 'Débito' : 'Crédito' },
-                        { key: 'valorAbs', label: 'Valor', render: t => `<strong>${formatCurrency(t.valorAbs)}</strong>` }
-                    ]);
-                } else {
-                    $('#calendarioTable').innerHTML = '<div class="empty-state"><div class="icon">📅</div>Selecione um dia no calendário para ver as transações.</div>';
-                }
-            }
-
-            function renderCalendar(containerId, data, tipo, monthObj) {
-                const container = $('#' + containerId);
-                if (!container) return;
-                const { year, month } = monthObj;
-                const firstDay = new Date(year, month, 1).getDay();
-                const daysInMonth = new Date(year, month + 1, 0).getDate();
-                const today = new Date();
-                const isToday = (d) => d.getFullYear() === today.getFullYear() && d.getMonth() === today.getMonth() && d.getDate() === today.getDate();
-                const isSelected = (d) => state.calendarSelectedDate && state.calendarSelectedDate.year === year && state.calendarSelectedDate.month === month && state.calendarSelectedDate.day === d;
-                let html = `
-                    <div class="calendar-header">
-                        <div class="calendar-nav">
-                            <button data-action="prevMonth">←</button>
-                            <span class="calendar-title">${getMonthLabel(month)} ${year}</span>
-                            <button data-action="nextMonth">→</button>
-                        </div>
-                        <div class="calendar-nav">
-                            <button data-action="today">Hoje</button>
-                        </div>
-                    </div>
-                    <div class="calendar-grid">
-                `;
-                const dayHeaders = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
-                dayHeaders.forEach(d => html += `<div class="calendar-day-header">${d}</div>`);
-                for (let i = 0; i < firstDay; i++) html += `<div class="calendar-day other-month"></div>`;
-                for (let d = 1; d <= daysInMonth; d++) {
-                    const dateObj = new Date(year, month, d);
-                    const dayData = getTransactionsForDay(data, year, month, d);
-                    const totalDeb = dayData.filter(t => t.tipo === 'debito').reduce((s, t) => s + t.valorAbs, 0);
-                    const totalCred = dayData.filter(t => t.tipo === 'credito').reduce((s, t) => s + t.valorAbs, 0);
-                    const classes = ['calendar-day'];
-                    if (isToday(dateObj)) classes.push('today');
-                    if (isSelected(d)) classes.push('selected');
-                    html += `<div class="${classes.join(' ')}" data-day="${d}">
-                        <div class="day-number">${d}</div>
-                        ${totalDeb > 0 ? `<div class="day-indicator debit">-${formatCurrencyCompact(totalDeb)}</div>` : ''}
-                        ${totalCred > 0 ? `<div class="day-indicator credit">+${formatCurrencyCompact(totalCred)}</div>` : ''}
-                    </div>`;
-                }
-                html += '</div>';
-                container.innerHTML = html;
-                // Eventos do calendário
-                $$('button[data-action]', container).forEach(btn => {
-                    btn.addEventListener('click', () => {
-                        if (btn.dataset.action === 'prevMonth') {
-                            monthObj.month--;
-                            if (monthObj.month < 0) { monthObj.month = 11; monthObj.year--; }
-                        } else if (btn.dataset.action === 'nextMonth') {
-                            monthObj.month++;
-                            if (monthObj.month > 11) { monthObj.month = 0; monthObj.year++; }
-                        } else if (btn.dataset.action === 'today') {
-                            monthObj.year = today.getFullYear();
-                            monthObj.month = today.getMonth();
-                        }
-                        renderCurrentPage();
-                    });
-                });
-                $$('.calendar-day[data-day]', container).forEach(day => {
-                    day.addEventListener('click', () => {
-                        const d = parseInt(day.dataset.day);
-                        if (containerId === 'calendarioGeral') {
-                            state.calendarSelectedDate = { year, month, day: d };
-                        }
-                        renderCurrentPage();
-                    });
-                });
-            }
-
-            function renderComparativo() {
-                const f = state.filters.comparativo;
-                const data = filterTransactions(allTransactions, f);
-                const anos = getYears(allTransactions);
-                const anoAtual = f.ano ? parseInt(f.ano) : new Date().getFullYear();
-                const anosDisponiveis = anos.filter(a => a >= anoAtual - 3 && a <= anoAtual).sort((a,b) => a-b);
-                const comparativo = anosDisponiveis.map(ano => {
-                    const deb = data.filter(t => t.ano === ano && t.tipo === 'debito').reduce((s, t) => s + t.valorAbs, 0);
-                    const cred = data.filter(t => t.ano === ano && t.tipo === 'credito').reduce((s, t) => s + t.valorAbs, 0);
-                    return { ano, deb, cred, saldo: cred - deb };
-                });
-                const totalDeb = comparativo.reduce((s, c) => s + c.deb, 0);
-                const totalCred = comparativo.reduce((s, c) => s + c.cred, 0);
-                const saldo = totalCred - totalDeb;
-                $('#comparativoCards').innerHTML = `
-                    ${renderCard('red', 'Total Débitos', formatCurrency(totalDeb), '', 'red')}
-                    ${renderCard('green', 'Total Créditos', formatCurrency(totalCred), '', 'green')}
-                    ${renderCard(saldo >= 0 ? 'green' : 'red', 'Saldo', formatCurrency(saldo), '', saldo >= 0 ? 'green' : 'red')}
-                `;
-                $('#comparativoFilters').innerHTML = `
-                    <div class="filter-group"><label>Ano Referência</label><select data-filter="ano" data-placeholder="Todos"><option value="">Todos</option>${anos.map(a => `<option value="${a}">${a}</option>`).join('')}</select></div>
-                `;
-                let html = '<table><thead><tr><th>Ano</th><th>Débitos</th><th>Créditos</th><th>Saldo</th></tr></thead><tbody>';
-                comparativo.forEach(c => {
-                    html += `<tr><td>${c.ano}</td><td>${formatCurrency(c.deb)}</td><td>${formatCurrency(c.cred)}</td><td class="${c.saldo >= 0 ? 'green' : 'red'}">${formatCurrency(c.saldo)}</td></tr>`;
-                });
-                html += '</tbody></table>';
-                $('#comparativoTable').innerHTML = html;
-            }
-
-            function renderAnalise() {
-                const f = state.filters.analise;
-                const data = filterTransactions(allTransactions, f);
-                const anos = getYears(allTransactions);
-                const mesAtual = new Date().getMonth();
-                const anoAtual = new Date().getFullYear();
-                const anoRef = f.ano ? parseInt(f.ano) : anoAtual;
-                const mesRef = f.mes ? parseInt(f.mes) : mesAtual;
-                const dadosMes = data.filter(t => t.ano === anoRef && t.mes === mesRef);
-                const totalDebMes = sumByType(dadosMes, 'debito');
-                const totalCredMes = sumByType(dadosMes, 'credito');
-                const saldoMes = totalCredMes - totalDebMes;
-                const dadosAno = data.filter(t => t.ano === anoRef);
-                const totalDebAno = sumByType(dadosAno, 'debito');
-                const totalCredAno = sumByType(dadosAno, 'credito');
-                const saldoAno = totalCredAno - totalDebAno;
-                $('#analiseCards').innerHTML = `
-                    ${renderCard('red', 'Débitos Mês', formatCurrency(totalDebMes), '', 'red')}
-                    ${renderCard('green', 'Créditos Mês', formatCurrency(totalCredMes), '', 'green')}
-                    ${renderCard(saldoMes >= 0 ? 'green' : 'red', 'Saldo Mês', formatCurrency(saldoMes), '', saldoMes >= 0 ? 'green' : 'red')}
-                    ${renderCard(saldoAno >= 0 ? 'green' : 'red', 'Saldo Ano', formatCurrency(saldoAno), '', saldoAno >= 0 ? 'green' : 'red')}
-                `;
-                $('#analiseFilters').innerHTML = `
-                    <div class="filter-group"><label>Ano</label><select data-filter="ano" data-placeholder="Todos"><option value="">Todos</option>${anos.map(a => `<option value="${a}">${a}</option>`).join('')}</select></div>
-                    <div class="filter-group"><label>Mês</label><select data-filter="mes" data-placeholder="Todos"><option value="">Todos</option>${Array.from({length:12}, (_,i) => `<option value="${i}">${getMonthLabel(i)}</option>`).join('')}</select></div>
-                `;
-                // Gráfico comparativo de categorias no mês
-                const catDeb = groupByCategory(dadosMes.filter(t => t.tipo === 'debito'), 'debito');
-                const catCred = groupByCategory(dadosMes.filter(t => t.tipo === 'credito'), 'credito');
-                $('#analiseCharts').innerHTML = `
-                    <div class="chart-card"><div class="chart-title">Categorias de Débito no Mês</div><canvas id="analise-pie-deb"></canvas></div>
-                    <div class="chart-card"><div class="chart-title">Categorias de Crédito no Mês</div><canvas id="analise-pie-cred"></canvas></div>
-                `;
-                if (window.Chart) {
-                    createOrUpdateChart('analise-pie-deb', {
-                        type: 'pie', ctx: $('#analise-pie-deb'),
-                        data: { labels: catDeb.map(c => c.categoria), datasets: [{ data: catDeb.map(c => c.total), backgroundColor: ['#ef4444','#f97316','#f59e0b','#dc2626','#b91c1c'] }] },
-                        options: { responsive: true, maintainAspectRatio: false }
-                    });
-                    createOrUpdateChart('analise-pie-cred', {
-                        type: 'pie', ctx: $('#analise-pie-cred'),
-                        data: { labels: catCred.map(c => c.categoria), datasets: [{ data: catCred.map(c => c.total), backgroundColor: ['#10b981','#34d399','#059669','#6ee7b7','#a7f3d0'] }] },
-                        options: { responsive: true, maintainAspectRatio: false }
-                    });
-                }
-                renderTable('analiseTable', dadosMes, [
-                    { key: 'data', label: 'Data', render: t => formatDateBR(t.dateObj) },
-                    { key: 'descricao', label: 'Descrição' },
-                    { key: 'categoria', label: 'Categoria' },
-                    { key: 'tipo', label: 'Tipo', render: t => t.tipo === 'debito' ? 'Débito' : 'Crédito' },
-                    { key: 'valorAbs', label: 'Valor', render: t => `<strong>${formatCurrency(t.valorAbs)}</strong>` }
-                ]);
-            }
-
-            // ===================== TOASTS =====================
-            function showToast(message, type = 'info') {
-                const container = $('#toastContainer');
-                const icons = { success: '✅', error: '❌', info: 'ℹ️' };
-                const toast = document.createElement('div');
-                toast.className = `toast ${type}`;
-                toast.innerHTML = `<span class="toast-icon">${icons[type] || 'ℹ️'}</span> ${message}`;
-                container.appendChild(toast);
-                setTimeout(() => {
-                    toast.classList.add('removing');
-                    setTimeout(() => toast.remove(), 300);
-                }, 3000);
-            }
-
-            // ===================== INICIALIZAÇÃO E EVENTOS =====================
-            function init() {
-                // Tema
-                if (state.theme === 'dark') document.documentElement.setAttribute('data-theme', 'dark');
-                // Sidebar colapsada no desktop
-                if (state.sidebarCollapsed && window.innerWidth > 768) {
-                    $('#sidebar').classList.add('collapsed');
-                    $('#mainWrapper').classList.add('sidebar-collapsed');
-                }
-                // Navegação
-                $$('.nav-item').forEach(item => {
-                    item.addEventListener('click', () => {
-                        state.currentPage = item.dataset.page;
-                        renderCurrentPage();
-                        if (window.innerWidth <= 768) closeMobileSidebar();
-                    });
-                });
-                // Hamburger
-                $('#hamburgerBtn').addEventListener('click', () => {
-                    if (window.innerWidth <= 768) {
-                        $('#sidebar').classList.toggle('mobile-open');
-                        $('#sidebarOverlay').classList.toggle('visible');
-                    } else {
-                        const collapsed = $('#sidebar').classList.toggle('collapsed');
-                        $('#mainWrapper').classList.toggle('sidebar-collapsed', collapsed);
-                        state.sidebarCollapsed = collapsed;
-                        localStorage.setItem('dash_sidebar', collapsed ? 'collapsed' : 'expanded');
-                    }
-                });
-                $('#sidebarOverlay').addEventListener('click', closeMobileSidebar);
-                // Dark mode
-                $('#btnDarkMode').addEventListener('click', toggleTheme);
-                // Atualizar
-                $('#btnAtualizar').addEventListener('click', () => loadData(true));
-                // Imprimir
-                $('#btnImprimir').addEventListener('click', () => window.print());
-                // Relógio
-                updateClock();
-                setInterval(updateClock, 1000);
-                // Atalhos de teclado
-                document.addEventListener('keydown', (e) => {
-                    if (e.key.toLowerCase() === 'r') loadData(true);
-                    if (e.key.toLowerCase() === 'd') toggleTheme();
-                    if (e.key.toLowerCase() === 'p') window.print();
-                });
-                // Delegation para filtros (select e input)
-                document.addEventListener('change', (e) => {
-                    const target = e.target;
-                    if (target.matches('[data-filter]')) {
-                        const page = state.currentPage;
-                        const filterKey = target.dataset.filter;
-                        const value = target.value;
-                        if (!state.filters[page]) state.filters[page] = {};
-                        state.filters[page][filterKey] = value;
-                        renderCurrentPage();
-                    }
-                });
-                // Carregar dados
-                loadData(true);
-            }
-
-            function toggleTheme() {
-                state.theme = state.theme === 'dark' ? 'light' : 'dark';
-                document.documentElement.setAttribute('data-theme', state.theme);
-                localStorage.setItem('dash_theme', state.theme);
-                // Recarrega os gráficos para atualizar cores se necessário
-                renderCurrentPage();
-            }
-
-            function updateClock() {
-                const now = new Date();
-                $('#clock').textContent = now.toLocaleTimeString('pt-BR');
-            }
-
-            function closeMobileSidebar() {
-                $('#sidebar').classList.remove('mobile-open');
-                $('#sidebarOverlay').classList.remove('visible');
-            }
-
-            // Iniciar quando o DOM estiver pronto
-            document.addEventListener('DOMContentLoaded', init);
-            // Caso o DOM já esteja carregado, chama init imediatamente
-            if (document.readyState === 'complete' || document.readyState === 'interactive') {
-                init();
-            }
-        })();
-    </script>
+    // Carregar função inicial
+    window.onload = function() {
+        carregarDadosFuncao();
+    };
+</script>
 </body>
 </html>
